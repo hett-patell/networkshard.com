@@ -6,7 +6,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = "Het Patel — Cybersecurity Engineer & VAPT Specialist" } = Astro.props;
+const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research." } = Astro.props;
 const currentPath = Astro.url.pathname;
 const buildCommit =
   import.meta.env.PUBLIC_COMMIT_SHA?.slice(0, 7) ||
@@ -41,12 +41,17 @@ const breadcrumbs = [
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content={description} />
+  <meta name="keywords" content="cybersecurity, penetration testing, VAPT, vulnerability assessment, security research, ethical hacking, red teaming, Het Patel, networkshard" />
   <meta name="author" content="Het Patel" />
   <meta property="og:title" content={`${title} | networkshard`} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="canonical" href={Astro.url.href} />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <link rel="preload" href="/fonts/GeistMonoVF.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/GeistVF.woff2" as="font" type="font/woff2" crossorigin />
   <title>{title} — networkshard</title>
 </head>
 <body class="flex min-h-screen flex-col gap-y-6 font-mono">

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /blog/search.json
+
+Sitemap: https://networkshard.com/sitemap-index.xml

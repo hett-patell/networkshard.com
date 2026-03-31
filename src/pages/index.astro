@@ -7,7 +7,7 @@ const posts = (await getCollection('blog'))
 const latestPost = posts[0] || null;
 ---
 
-<BaseLayout title="Het Patel">
+<BaseLayout title="Het Patel — Cybersecurity Engineer" description="Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, red teaming, and security research.">
   <section class="hero-section relative py-0" id="hero">
     <div class="bento-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
@@ -19,7 +19,9 @@ const latestPost = posts[0] || null;
             <div class="aspect-[2/3] sm:aspect-auto sm:h-full w-full relative">
               <img
                 src="/photo.webp"
-                alt="Het Patel"
+                alt="Het Patel — Cybersecurity Engineer"
+                width="832"
+                height="832"
                 class="absolute inset-0 w-full h-full object-contain photo-light"
                 loading="eager"
                 fetchpriority="high"
@@ -27,7 +29,9 @@ const latestPost = posts[0] || null;
               />
               <img
                 src="/photo-dark.webp"
-                alt="Het Patel"
+                alt="Het Patel — Cybersecurity Engineer"
+                width="832"
+                height="832"
                 class="absolute inset-0 w-full h-full object-contain photo-dark"
                 loading="eager"
                 fetchpriority="low"
