@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const tagCounts: Record<string, number> = {};
+
+for (const post of posts) {
+  if (post.data.draft) continue;
+  for (const tag of post.data.tags || []) {
+    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+  }
+}
+
+const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title="Tags — Blog" description="Browse cybersecurity articles by topic and category.">
+  <section class="pb-10 md:pb-12">
+    <header class="mb-6">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight mb-2">Tags</h1>
+      <p class="text-base text-muted-foreground">Browse articles by topic.</p>
+    </header>
+
+    <div class="flex flex-wrap gap-2">
+      {sortedTags.map(([tag, count]) => (
+        <a
+          href={`/blog/tags/${tag}`}
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-mono border border-border/60 bg-muted/50 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
+        >
+          {tag}
+          <span class="text-[10px] text-muted-foreground/60">{count}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
