@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const tagSet = new Set<string>();
+
+  for (const post of posts) {
+    for (const tag of post.data.tags || []) {
+      tagSet.add(slugify(tag));
+    }
+  }
+
+  return [...tagSet].map((tag) => ({
+    params: { tag },
+  }));
+}
+
+const { tag } = Astro.params;
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .filter((post) => (post.data.tags || []).some((t) => slugify(t) === tag))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const titleLabel = posts.find((post) => post.data.tags?.some((t) => slugify(t) === tag))
+  ?.data.tags?.find((t) => slugify(t) === tag) || (tag || 'tag').replace(/-/g, ' ');
+---
+
+<BaseLayout title={`Tag: ${titleLabel}`} description={`Posts tagged ${titleLabel}.`}>
+  <section class="pb-8 md:pb-12">
+    <header class="mb-6">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight">{titleLabel}</h1>
+      <p class="mt-2 text-sm font-mono text-muted-foreground uppercase tracking-wider">{posts.length} Posts</p>
+    </header>
+
+    <ul class="flex flex-col divide-y divide-border/20">
+      {posts.map((post) => (
+        <li>
+          <a href={`/blog/${post.slug}`} class="blog-card-link block w-full py-4 -mx-4 px-4 transition-colors duration-300 rounded">
+            <div class="flex flex-col gap-1.5">
+              <h2 class="blog-card-title font-mono text-base font-semibold leading-snug text-foreground/90 transition-colors duration-150">
+                {post.data.title}
+              </h2>
+              <p class="font-mono text-sm leading-relaxed text-muted-foreground line-clamp-2">
+                {post.data.description}
+              </p>
+              <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-muted-foreground">
+                <time>{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+                {post.data.readTime && <><span class="text-muted-foreground/50">|</span><span>{post.data.readTime}</span></>}
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+

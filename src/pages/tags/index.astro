@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const tagMap = new Map<string, { name: string; count: number }>();
+
+for (const post of posts) {
+  for (const tag of post.data.tags || []) {
+    const slug = slugify(tag);
+    const current = tagMap.get(slug);
+    if (current) {
+      current.count += 1;
+    } else {
+      tagMap.set(slug, { name: tag, count: 1 });
+    }
+  }
+}
+
+const tags = [...tagMap.entries()]
+  .map(([slug, value]) => ({ slug, ...value }))
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+---
+
+<BaseLayout title="Tags" description="Browse posts by tag.">
+  <section class="pb-8 md:pb-12">
+    <header class="mb-6">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight">Tags</h1>
+      <p class="mt-2 text-sm font-mono text-muted-foreground uppercase tracking-wider">{tags.length} Tags</p>
+    </header>
+
+    <ul class="projects-table" role="list">
+      {tags.map((tag) => (
+        <li>
+          <a href={`/tags/${tag.slug}/`} class="projects-row">
+            <div class="projects-row__title">
+              <span class="projects-row__path">/tags/{tag.slug}</span>
+              <h2 class="projects-row__headline text-lg font-semibold leading-snug text-foreground/90">{tag.name}</h2>
+            </div>
+            <p class="projects-row__desc text-sm leading-relaxed text-muted-foreground">
+              Browse all posts tagged {tag.name}.
+            </p>
+            <div class="projects-row__meta">
+              <span class="projects-row__label">Posts</span>
+              <div class="projects-row__tags">
+                <span class="projects-row__tag">{tag.count}</span>
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
