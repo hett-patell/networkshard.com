@@ -106,8 +106,52 @@ const breadcrumbs = [
             <svg class="icon-sun size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             <svg class="icon-moon size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           </button>
+
+          <!-- Mobile menu button -->
+          <button
+            id="mobile-menu-toggle"
+            type="button"
+            class="inline-flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors md:hidden"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+          >
+            <svg class="mobile-menu-open size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+            <svg class="mobile-menu-close size-4 hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
         </div>
       </div>
+
+      <!-- Mobile navigation -->
+      <nav
+        id="mobile-menu"
+        class="mobile-menu hidden border-t border-border/40 md:hidden"
+        aria-label="Mobile navigation"
+      >
+        <div class="mx-auto max-w-3xl px-4 py-3 flex flex-col gap-1">
+          <a href="/blog"
+            class:list={[
+              "px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
+              currentPath.startsWith('/blog')
+                ? "text-foreground bg-foreground/5"
+                : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
+            ]}>Blog</a>
+          <a href="/projects"
+            class:list={[
+              "px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
+              currentPath.startsWith('/projects')
+                ? "text-foreground bg-foreground/5"
+                : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
+            ]}>Projects</a>
+          <a href="/about"
+            class:list={[
+              "px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
+              currentPath.startsWith('/about')
+                ? "text-foreground bg-foreground/5"
+                : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
+            ]}>About</a>
+        </div>
+      </nav>
   </header>
 
   <div id="search-dialog" class="fixed inset-0 z-[60] hidden items-start justify-center bg-background/60 backdrop-blur-sm">
@@ -215,6 +259,33 @@ const breadcrumbs = [
       const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
+    });
+  </script>
+
+  <!-- Mobile menu toggle -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle = document.getElementById('mobile-menu-toggle');
+      const menu = document.getElementById('mobile-menu');
+      const iconOpen = toggle?.querySelector('.mobile-menu-open');
+      const iconClose = toggle?.querySelector('.mobile-menu-close');
+
+      toggle?.addEventListener('click', () => {
+        const isOpen = menu?.classList.contains('hidden') === false;
+        if (isOpen) {
+          menu.classList.add('hidden');
+          iconOpen?.classList.remove('hidden');
+          iconClose?.classList.add('hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-label', 'Open menu');
+        } else {
+          menu?.classList.remove('hidden');
+          iconOpen?.classList.add('hidden');
+          iconClose?.classList.remove('hidden');
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.setAttribute('aria-label', 'Close menu');
+        }
+      });
     });
   </script>
 
