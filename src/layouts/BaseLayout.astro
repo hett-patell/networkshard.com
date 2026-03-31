@@ -421,6 +421,29 @@ const breadcrumbs = [
     });
   </script>
 
+  <!-- GoatCounter analytics (privacy-friendly, no cookies) -->
+  <script
+    data-goatcounter="https://networkshard.goatcounter.com/count"
+    async
+    src="//gc.zgo.at/count.js"
+  ></script>
+
+  <!-- Fetch GoatCounter view count for about page -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('stat-total-views');
+      if (!el) return;
+      fetch('https://networkshard.goatcounter.com/counter/*.json')
+        .then(r => r.json())
+        .then(data => {
+          el.textContent = data.count_unique || data.count || '--';
+        })
+        .catch(() => {
+          el.textContent = '--';
+        });
+    });
+  </script>
+
   <!-- Text scramble -->
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
