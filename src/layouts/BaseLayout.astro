@@ -432,7 +432,7 @@ const breadcrumbs = [
     document.addEventListener('DOMContentLoaded', () => {
       const el = document.getElementById('stat-total-views');
       if (!el) return;
-      fetch('https://networkshard.goatcounter.com/counter/*.json')
+      fetch('https://networkshard.goatcounter.com/counter/TOTAL.json')
         .then(r => { if (!r.ok) throw new Error(); return r.json(); })
         .then(data => {
           const count = data.count_unique || data.count;
