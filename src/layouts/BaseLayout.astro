@@ -4,9 +4,11 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  image?: string;
+  jsonLd?: Record<string, unknown>;
 }
 
-const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research." } = Astro.props;
+const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research.", image, jsonLd } = Astro.props;
 const currentPath = Astro.url.pathname;
 const buildCommit =
   import.meta.env.PUBLIC_COMMIT_SHA?.slice(0, 7) ||
@@ -46,6 +48,14 @@ const breadcrumbs = [
   <meta property="og:title" content={`${title} | networkshard`} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content={Astro.url.href} />
+  {image && <meta property="og:image" content={image} />}
+  {image && <meta property="og:image:width" content="1200" />}
+  {image && <meta property="og:image:height" content="630" />}
+  <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+  <meta name="twitter:title" content={`${title} | networkshard`} />
+  <meta name="twitter:description" content={description} />
+  {image && <meta name="twitter:image" content={image} />}
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -54,6 +64,7 @@ const breadcrumbs = [
   <link rel="preload" href="/fonts/GeistMonoVF.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/GeistVF.woff2" as="font" type="font/woff2" crossorigin />
   <title>{title} — networkshard</title>
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 </head>
 <body class="flex min-h-screen flex-col gap-y-6 font-mono">
 
