@@ -16,7 +16,7 @@ _This write-up has been prepared under the guidance of_ [_Amish Patel_](https://
 
 * * *
 
-### Introduction 🔍
+## Introduction 🔍
 
 In this write-up, I’ll walk you through the discovery of **two critical vulnerabilities** on a popular educational site:
 
@@ -26,7 +26,7 @@ In this write-up, I’ll walk you through the discovery of **two critical vulner
 
 * * *
 
-### **🐞 Vulnerability #1: Stored HTML in Display Name**
+## **🐞 Vulnerability #1: Stored HTML in Display Name**
 
 During the account creation process on **\[redacted\].com**, I began exploring how the platform handles user input in the **full name** (username) field.
 
@@ -36,7 +36,7 @@ Initially, the frontend validation prevented me from entering any special charac
 
 However, being curious (and persistent), I opened up **Burp Suite** to intercept the registration request and manually modified the payload to include raw HTML:
 
-#### The Payload 🧪:
+### The Payload 🧪:
 
 ```
 <h1>Holaaaa</h1>
@@ -61,14 +61,14 @@ https://www.redacted.com/members/<h1>holaa</h1>
 
 ![](https://cdn-images-1.medium.com/max/800/0*ffhYhCchyjCW1UYt.gif)
 
-#### ⚠️ Why This Matters
+### ⚠️ Why This Matters
 
 Although visiting the profile page returned a `404 Not Found` (likely due to the special characters breaking routing logic), the more critical issue is:
 
 -   The **unsanitized HTML was stored in the backend**
 -   It could later be **rendered elsewhere on the platform**, triggering a **Stored XSS**
 
-#### 🎯 Real-World Impact
+### 🎯 Real-World Impact
 
 If this display name appears anywhere else — such as:
 
@@ -78,7 +78,7 @@ If this display name appears anywhere else — such as:
 
 * * *
 
-### 🐞 Vulnerability #2: Insecure Direct Object Reference (IDOR) in ID Parameter
+## 🐞 Vulnerability #2: Insecure Direct Object Reference (IDOR) in ID Parameter
 
 While exploring other features on **\[redacted\].com**, I stumbled upon a seemingly harmless endpoint used to **share blog articles with a friend**:
 
@@ -88,7 +88,7 @@ While exploring other features on **\[redacted\].com**, I stumbled upon a seemin
 
 Out of curiosity, I changed the numeric `BlogID` to a different value — and what happened next was unexpected (and dangerous).
 
-### 🧪 The Flow
+## 🧪 The Flow
 
 While exploring the blog system on **\[redacted\].com**, I created a **test blog** that contained a set of **XSS payloads**. After publishing it, I noticed a familiar set of **three dots (⋮)** on the blog post — a dropdown menu offering several options, including:
 
@@ -116,7 +116,7 @@ All I did was change the BlogID parameter and that GAVE MEEEE:
 
 ![](https://cdn-images-1.medium.com/max/800/1*fs4cebCQwdhbZLPNjtAS4g.png)
 
-### 📥 What I Saw
+## 📥 What I Saw
 
 This page was **pre-filled with email content** meant to send a preview of my blog to someone:
 
@@ -126,7 +126,7 @@ Hello,This email is sent to you by Het (hetworkshard@gmail.com).Het has recommen
 
 The **payloads I had inserted into my blog description were rendered here**, completely unfiltered.
 
-### 🔓 What This Means
+## 🔓 What This Means
 
 This is a **clear case of IDOR (Insecure Direct Object Reference)**:
 
@@ -140,7 +140,7 @@ Worse, if **other users had XSS payloads**, I could **trigger their JavaScript**
 -   Trigger auto-send requests
 -   Deliver malicious content to recipients
 
-### 🔥 Combined XSS + IDOR = 💀
+## 🔥 Combined XSS + IDOR = 💀
 
 ![](https://cdn-images-1.medium.com/max/800/0*rw28rFVGw1D3jSvH.gif)
 
@@ -154,7 +154,7 @@ The iframe-based payload even contained an encoded JavaScript snippet pointing t
 
 * * *
 
-### 🐞 Vulnerability #3: Stored XSS Triggered in Blog’s History Preview
+## 🐞 Vulnerability #3: Stored XSS Triggered in Blog’s History Preview
 
 After successfully identifying XSS via the email feature and IDOR via blog IDs, I continued exploring the platform’s blog management UI — specifically those familiar **three vertical dots (⋮)** found on every blog post.
 
@@ -166,7 +166,7 @@ These dots offered multiple options like:
 
 It was the **“View History”** option that revealed a hidden gem — or more accurately, a **security nightmare**.
 
-### 📜 The Flow
+## 📜 The Flow
 
 I had already created a blog with **malicious XSS payloads** in the title and description, as part of my testing:
 
@@ -180,7 +180,7 @@ Out of curiosity, I clicked on:
 
 The history section previewed all previous versions of my blog, including the version that contained the above payload.
 
-### ⚠️ The Trigger
+## ⚠️ The Trigger
 
 As soon as the **history page** loaded, the XSS payload inside the blog’s content **executed automatically** — right inside the browser.
 
@@ -206,7 +206,7 @@ The Preview of captured Info:
 
 * * *
 
-### About the Authors:
+## About the Authors:
 
 ![](https://cdn-images-1.medium.com/max/800/0*moCuFsc9KX8GEyvn.gif)
 

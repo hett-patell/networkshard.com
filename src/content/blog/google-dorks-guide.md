@@ -14,23 +14,23 @@ _This write-up has been prepared under the guidance of_ [_Amish Patel_](https://
 
 * * *
 
-### The Internet’s Secret Backdoor That Anyone Can Use
+## The Internet’s Secret Backdoor That Anyone Can Use
 
 Have you ever wondered how security researchers find exposed databases, accidentally public documents, or even unsecured cameras — all without sophisticated hacking tools? The answer lies in Google dorks: specialized search queries that leverage Google’s advanced search capabilities to uncover information that was never meant to be public.
 
 In 2022, a security researcher discovered an exposed database containing over 50,000 credit card records simply by using a Google dork that took less than 30 seconds to craft. This wasn’t “hacking” in the traditional sense — just a clever use of Google’s search engine.
 
-### **What Exactly Are Google Dorks?**
+## **What Exactly Are Google Dorks?**
 
 Google dorks (also known as “Google hacking” queries) are specialized search strings that use Google’s advanced operators to find information that isn’t easily accessible through regular searches.
 
 * * *
 
-### **The Basics: Google Search Operators**
+## **The Basics: Google Search Operators**
 
 Before diving into complex dorks, let’s understand the building blocks:
 
-#### 1\. Site Operator
+### 1\. Site Operator
 
 Restricts searches to a specific website or domain.
 
@@ -40,7 +40,7 @@ site:example.com password
 
 This searches for the word “password” only on example.com.
 
-#### 2\. Filetype Operator
+### 2\. Filetype Operator
 
 Finds specific file types.
 
@@ -50,7 +50,7 @@ filetype:pdf "confidential"
 
 This locates PDF files containing the word “confidential.”
 
-#### 3\. Intitle Operator
+### 3\. Intitle Operator
 
 Searches for specific text in the page title.
 
@@ -60,7 +60,7 @@ intitle:"index of" passwords
 
 This finds directory listings that might contain password files.
 
-#### 4\. Inurl Operator
+### 4\. Inurl Operator
 
 Searches for specific text in the URL.
 
@@ -72,11 +72,11 @@ This locates admin login pages.
 
 * * *
 
-### Intermediate Dorks: Combining Operators
+## Intermediate Dorks: Combining Operators
 
 The real power emerges when combining these operators:
 
-#### 1\. Finding Exposed Databases
+### 1\. Finding Exposed Databases
 
 ```
 intitle:"Index of" intext:config.php
@@ -84,7 +84,7 @@ intitle:"Index of" intext:config.php
 
 This might reveal websites with exposed PHP configuration files.
 
-#### 2\. Locating Sensitive Documents
+### 2\. Locating Sensitive Documents
 
 ```
 site:gov filetype:xls intext:"credit card"
@@ -92,7 +92,7 @@ site:gov filetype:xls intext:"credit card"
 
 This searches for Excel files on government sites that might contain credit card information.
 
-#### 3\. Finding Network Devices
+### 3\. Finding Network Devices
 
 ```
 intitle:"router configuration" inurl:config
@@ -102,9 +102,9 @@ This can discover router configuration pages that may be publicly accessible.
 
 * * *
 
-### Advanced Techniques: The Pro Level
+## Advanced Techniques: The Pro Level
 
-#### 1\. Negative Operators
+### 1\. Negative Operators
 
 The minus symbol excludes results containing specific terms:
 
@@ -114,7 +114,7 @@ site:example.com filetype:pdf -inurl:public
 
 This finds PDFs on example.com that aren’t in URLs containing “public”.
 
-#### 2\. Wildcards and Ranges
+### 2\. Wildcards and Ranges
 
 ```
 site:example.com "annual report" 2020..2022
@@ -122,7 +122,7 @@ site:example.com "annual report" 2020..2022
 
 This finds annual reports from 2020 to 2022.
 
-#### 3\. Cache Operator
+### 3\. Cache Operator
 
 ```
 cache:example.com/private-page
@@ -132,9 +132,9 @@ This might show Google’s cached version of content that’s since been removed
 
 * * *
 
-### Powerful Real-World Combinations
+## Powerful Real-World Combinations
 
-#### 1\. For Security Researchers:
+### 1\. For Security Researchers:
 
 ```
 intitle:"Index of" parent directory "htpasswd" -htpasswd.sample
@@ -148,7 +148,7 @@ filetype:env "DB_PASSWORD"
 
 This might uncover environment files with database credentials.
 
-#### 2\. For Competitive Intelligence
+### 2\. For Competitive Intelligence
 
 ```
 site:competitor.com filetype:ppt OR filetype:pdf intext:"confidential" OR intext:"internal use only"
@@ -156,7 +156,7 @@ site:competitor.com filetype:ppt OR filetype:pdf intext:"confidential" OR intext
 
 This searches for potentially sensitive presentations or documents.
 
-#### 3\. For Finding Vulnerabilities
+### 3\. For Finding Vulnerabilities
 
 ```
 inurl:"/webconsole/ClientServlet" intitle:"Web Server Console"
@@ -166,35 +166,35 @@ This specific dork can find certain vulnerable web consoles.
 
 * * *
 
-### **The Ultimate Google Dork Cheat Sheet**
+## **The Ultimate Google Dork Cheat Sheet**
 
 ![](https://cdn-images-1.medium.com/max/800/1*KsKqZ9MTJEKU2mzU3EkCTg.png)
 
-#### Finding Vulnerable Websites:
+### Finding Vulnerable Websites:
 
 ```
 intext:"sql syntax near" | intext:"syntax error has occurred" | intext:"incorrect syntax near" | intext:"unexpected end of SQL command" | intext:"Warning: mysql_connect()" | intext:"Warning: mysql_query()" | intext:"Warning: pg_connect()"
 ```
 
-#### Discovering Camera Systems
+### Discovering Camera Systems
 
 ```
 intitle:"live view" inurl:axis OR inurl:view/index.shtml
 ```
 
-#### Finding Login Portals
+### Finding Login Portals
 
 ```
 inurl:admin intitle:login
 ```
 
-#### Exposed Server Status Pages
+### Exposed Server Status Pages
 
 ```
 intitle:"Apache Status" "Apache Server Status for"
 ```
 
-#### Finding Backup Files
+### Finding Backup Files
 
 ```
 site:target.com ext:bak | ext:old | ext:backup | ext:txt
@@ -202,7 +202,7 @@ site:target.com ext:bak | ext:old | ext:backup | ext:txt
 
 * * *
 
-### Conclusion
+## Conclusion
 
 Google dorks represent a powerful interface between regular web browsing and more advanced OSINT techniques. They remind us of an important truth about the internet: sometimes the most valuable information isn’t hidden behind sophisticated security barriers — it’s hiding in plain sight, just waiting for the right query to reveal it.
 

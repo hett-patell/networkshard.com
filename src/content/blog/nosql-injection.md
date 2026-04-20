@@ -8,7 +8,7 @@ readTime: "6 min read"
 
 ![](https://cdn-images-1.medium.com/max/800/0*v7AwZvTJBpEZ6pc-)
 
-### Overview
+## Overview
 
 NoSQL injection occurs when untrusted user input is unsafely interpolated into NoSQL queries. Due to the flexible, schema-less nature of NoSQL databases (like MongoDB, CouchDB, etc.), traditional SQLi defenses often fall short — leading to novel attack surfaces.
 
@@ -16,14 +16,14 @@ NoSQL injection occurs when untrusted user input is unsafely interpolated into N
 
 * * *
 
-#### There are two major types of NoSQL Injection:
+### There are two major types of NoSQL Injection:
 
-#### 1\. Syntax Injection
+### 1\. Syntax Injection
 
 -   Involves breaking the query syntax and injecting custom code.
 -   Similar in spirit to classic SQLi, but the syntax and context differ significantly.
 
-#### 2\. Operator Injection
+### 2\. Operator Injection
 
 -   Leverages query operators like `$ne`, `$in`, `$regex`, or `$where` to manipulate logic and extract data.
 
@@ -31,9 +31,9 @@ NoSQL injection occurs when untrusted user input is unsafely interpolated into N
 
 * * *
 
-### NoSQL Syntax Injection 🔍
+## NoSQL Syntax Injection 🔍
 
-#### Detecting Syntax Injection in MongoDB 🧪
+### Detecting Syntax Injection in MongoDB 🧪
 
 **Test URL:**
 
@@ -63,7 +63,7 @@ Response anomalies may indicate unsanitized user input.
 
 * * *
 
-### Character-Based Testing 🔍
+## Character-Based Testing 🔍
 
 Inject a single quote:
 
@@ -83,7 +83,7 @@ If it works, the app is parsing raw input in MongoDB queries — potential s
 
 * * *
 
-### Boolean Conditions for Validation ✅
+## Boolean Conditions for Validation ✅
 
 -   False condition:
 
@@ -101,7 +101,7 @@ If the application behaves differently, it confirms backend query manipulation.
 
 * * *
 
-### Overriding Conditions 🧨
+## Overriding Conditions 🧨
 
 **Example Payload:**
 
@@ -119,7 +119,7 @@ This forces the condition to always return `true`.
 
 * * *
 
-### Bypassing with Null Characters 🧬
+## Bypassing with Null Characters 🧬
 
 **Scenario:**
 
@@ -139,13 +139,13 @@ If the backend trims after null byte, `this.released` is ignored — potenti
 
 * * *
 
-### NoSQL Operator Injection
+## NoSQL Operator Injection
 
 ![](https://cdn-images-1.medium.com/max/800/1*tOiNTp4R0MsI8ahpcuMc5A.png)
 
 * * *
 
-### Authentication Bypass Example 🔓
+## Authentication Bypass Example 🔓
 
 **Original Request:**
 
@@ -163,7 +163,7 @@ Returns all users where username and password ≠ “invalid” — likely l
 
 * * *
 
-#### Target Specific User 🎯
+### Target Specific User 🎯
 
 ```
 {"username":{"$in":["admin"]},"password":{"$ne":""}}
@@ -173,7 +173,7 @@ Returns all users where username and password ≠ “invalid” — likely l
 
 * * *
 
-### JavaScript Injection via `$where` 💉
+## JavaScript Injection via `$where` 💉
 
 **Request:**
 
@@ -195,7 +195,7 @@ admin' && this.password[0] == 'a' || 'a'=='b
 
 * * *
 
-### 🔍 Identifying Field Names
+## 🔍 Identifying Field Names
 
 Compare responses:
 
@@ -215,7 +215,7 @@ Identical output for username/password implies valid field.
 
 * * *
 
-### Exploiting Operator Injection to Extract Data 🔐
+## Exploiting Operator Injection to Extract Data 🔐
 
 **Injecting** `**$where**` **as Parameter**
 
@@ -237,7 +237,7 @@ Extract character-by-character using RegEx.
 
 * * *
 
-### Conclusion
+## Conclusion
 
 NoSQL injections can be just as dangerous as traditional SQL injections. By abusing flexible data models, JavaScript evaluation, and improper sanitization, attackers can:
 
@@ -248,7 +248,7 @@ NoSQL injections can be just as dangerous as traditional SQL injections. By abus
 
 ![](https://cdn-images-1.medium.com/max/800/0*ICawR5TViATVkHgy.gif)
 
-### 🔐 Mitigation Tips:
+## 🔐 Mitigation Tips:
 
 -   Always sanitize and validate input.
 -   Disable JavaScript-based operators like `$where` when not needed.

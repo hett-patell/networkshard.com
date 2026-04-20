@@ -6,7 +6,7 @@ tags: ["idor", "web-security", "bug-bounty"]
 readTime: "5 min read"
 ---
 
-### **“Why IDORs Are Everywhere — And How to Find Them” — Part I**
+## **“Why IDORs Are Everywhere — And How to Find Them” — Part I**
 
 ![](https://cdn-images-1.medium.com/max/800/1*46Qd3SNa4tKkcA5ORbSUJQ.png)
 
@@ -18,7 +18,7 @@ The beauty (and danger) of IDOR lies in its simplicity — no complex exploi
 
 ![](https://cdn-images-1.medium.com/max/800/1*pOShe-Y9KU8UoQ8xt60WYA.gif)
 
-### What is IDOR?
+## What is IDOR?
 
 IDOR occurs when an application exposes internal object references (like database keys, file names, or user IDs) in a way that allows attackers to manipulate them and gain unauthorized access to resources they shouldn’t be able to view or modify.
 
@@ -32,7 +32,7 @@ If the application doesn’t verify that the logged-in user owns account `12346`
 
 ![](https://cdn-images-1.medium.com/max/800/1*AFWKVkO4kf3f0ClM_0SNOA.gif)
 
-### Types of IDOR Vulnerabilities
+## Types of IDOR Vulnerabilities
 
 **1\. Horizontal IDOR** — Access data at the same privilege level
 
@@ -49,11 +49,11 @@ If the application doesn’t verify that the logged-in user owns account `12346`
 -   Deleting other users’ files without seeing them
 -   Modifying records without viewing the content
 
-### My Real-World Finding: Exposing Invoices via IDOR
+## My Real-World Finding: Exposing Invoices via IDOR
 
 ![](https://cdn-images-1.medium.com/max/800/0*jBnQxyUv6c20fb6i.gif)
 
-#### The Discovery Process
+### The Discovery Process
 
 While conducting a security assessment on a beta e-commerce platform, I discovered a critical IDOR vulnerability that exposed thousands of customer invoices. Here’s how it unfolded:
 
@@ -100,20 +100,20 @@ All I needed was to be logged into **my own account**. If not logged in, the end
 -   Potential privacy violations
 -   Risk of legal and regulatory non-compliance
 
-### How IDOR Happens
+## How IDOR Happens
 
 -   Lack of access control checks
 -   Exposing predictable object IDs
 -   Poor session management
 
-### Impact of IDOR Vulnerabilities
+## Impact of IDOR Vulnerabilities
 
 -   Data leakage
 -   Account takeover
 -   Unauthorized actions (modifying or deleting records)
 -   Full privilege escalation
 
-### Final Thoughts
+## Final Thoughts
 
 IDOR is a prime example of how simple mistakes can lead to serious consequences. It reinforces the importance of secure coding practices, regular testing, and awareness among developers and testers alike.
 

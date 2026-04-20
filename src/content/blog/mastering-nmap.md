@@ -12,7 +12,7 @@ _This write-up has been prepared under the guidance of_ [_Amish Patel_](https://
 
 * * *
 
-### Introduction
+## Introduction
 
 > _“When it comes to hacking, knowledge is power.”_
 
@@ -22,7 +22,7 @@ Imagine you’re handed a set of IP addresses and asked to perform a **security 
 
 * * *
 
-### What Are Ports? 🌐
+## What Are Ports? 🌐
 
 Ports are essential for distinguishing services on a computer. They act like communication endpoints. For example:
 
@@ -34,7 +34,7 @@ There are **65,535 ports** per device, but many services use standardized ones. 
 
 * * *
 
-### Why Use Nmap? 🔍
+## Why Use Nmap? 🔍
 
 ![](https://cdn-images-1.medium.com/max/800/0*cVYt14UIUwe8IDqU.gif)
 
@@ -51,9 +51,9 @@ nmap -h       # Help menu  man nmap      # Manual page
 
 * * *
 
-### Core Scan Types
+## Core Scan Types
 
-### 1\. TCP Connect Scan (-sT)
+## 1\. TCP Connect Scan (-sT)
 
 Performs a full **three-way handshake** with the target:
 
@@ -69,7 +69,7 @@ Best for environments where root privileges are not available.
 
 ![](https://cdn-images-1.medium.com/max/800/0*6V_IOJuKGS7kGxet.gif)
 
-### 2\. SYN Scan (-sS)
+## 2\. SYN Scan (-sS)
 
 Also known as a **half-open** or **stealth** scan:
 
@@ -90,7 +90,7 @@ Disadvantages:
 
 ![](https://cdn-images-1.medium.com/max/800/0*mLiWN1dCapio4i5H.gif)
 
-### 3\. UDP Scan (-sU)
+## 3\. UDP Scan (-sU)
 
 UDP is stateless and scanning is tricky:
 
@@ -108,20 +108,20 @@ nmap -sU --top-ports 20 <target>
 
 * * *
 
-### Advanced & Stealth Scans
+## Advanced & Stealth Scans
 
-### TCP Null Scan (-sN)
+## TCP Null Scan (-sN)
 
 -   Sends a packet with **no flags**
 -   Closed port → RST
 -   Open|Filtered → No response
 
-### TCP FIN Scan (-sF)
+## TCP FIN Scan (-sF)
 
 -   Sends a packet with the **FIN** flag
 -   Closed port → RST
 
-### TCP Xmas Scan (-sX)
+## TCP Xmas Scan (-sX)
 
 -   Flags: FIN, PSH, URG (like a blinking Christmas tree 🎄)
 -   Closed port → RST
@@ -130,7 +130,7 @@ These scans are stealthier and useful against **firewalls** blocking SYN packets
 
 * * *
 
-### Discovering Live Hosts
+## Discovering Live Hosts
 
 ![](https://cdn-images-1.medium.com/max/800/0*Yc6iGJv-HpKMEi1C.gif)
 
@@ -145,7 +145,7 @@ nmap -sn 192.168.0.1-254nmap -sn 192.168.0.0/24
 
 * * *
 
-### Bypassing Firewalls
+## Bypassing Firewalls
 
 ![](https://cdn-images-1.medium.com/max/800/0*cvksTnE8dbENhvCU.gif)
 
@@ -164,7 +164,7 @@ Other evasion options:
 
 * * *
 
-### Nmap Scripting Engine (NSE)
+## Nmap Scripting Engine (NSE)
 
 NSE scripts extend Nmap’s capabilities significantly. Scripts are written in Lua and categorized by type:
 
@@ -176,7 +176,7 @@ NSE scripts extend Nmap’s capabilities significantly. Scripts are written in L
 -   `brute`: Perform bruteforce attacks
 -   `discovery`: Gather more network information
 
-### Using Scripts
+## Using Scripts
 
 Run all scripts from a category:
 
@@ -202,7 +202,7 @@ Help for any script:
 nmap --script-help <script-name>
 ```
 
-### Finding Scripts
+## Finding Scripts
 
 ![](https://cdn-images-1.medium.com/max/800/0*btwJoawApYDvFVHI.gif)
 
@@ -226,7 +226,7 @@ sudo wget -O /usr/share/nmap/scripts/<script>.nse \  https://svn.nmap.org/nmap/s
 
 * * *
 
-### Final Thoughts
+## Final Thoughts
 
 Port scanning is the **foundation of enumeration**. Without it, you’re blindly poking at a system. Whether it’s a stealthy SYN scan, a protocol-specific UDP ping, or a targeted NSE script, **Nmap arms you with the visibility** needed to act smartly and ethically.
 
@@ -234,7 +234,7 @@ Port scanning is the **foundation of enumeration**. Without it, you’re blindly
 
 * * *
 
-### Pro Tip 💡
+## Pro Tip 💡
 
 Use `-oA scan_results` to save results in all formats (normal, XML, grepable):
 
@@ -244,7 +244,7 @@ nmap -sS -sV -A -T4 -oA scan_results <target>
 
 * * *
 
-### Recommended Lab
+## Recommended Lab
 
 Further Nmap: [https://tryhackme.com/room/furthernmap](https://tryhackme.com/room/furthernmap)
 
@@ -252,7 +252,7 @@ Nmap Live Host Discovery: [https://tryhackme.com/room/nmap01](https://tryhackme.
 
 * * *
 
-### About Me 👤
+## About Me 👤
 
 ![](https://cdn-images-1.medium.com/max/800/0*SRqMpy-WEMp8pFJD.gif)
 

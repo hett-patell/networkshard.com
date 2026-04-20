@@ -18,7 +18,7 @@ During a recent security assessment of **redacted.ai**, a virtual assistance pla
 
 * * *
 
-### 🧠 What’s redacted.ai?
+## 🧠 What’s redacted.ai?
 
 `redacted.ai` is an AI-based job-matching platform that:
 
@@ -38,13 +38,13 @@ Let’s just say… **things fell apart fast.**
 
 * * *
 
-### Vulnerabilities at a Glance
+## Vulnerabilities at a Glance
 
 ![](https://cdn-images-1.medium.com/max/800/1*YhZwgmUnpdLlPNeJ2uuFMw.png)
 
 * * *
 
-### 1️⃣ OTP? Nah, Who Needs That!
+## 1️⃣ OTP? Nah, Who Needs That!
 
 ![](https://cdn-images-1.medium.com/max/800/0*8subjYEY-df33Brv.gif)
 
@@ -52,7 +52,7 @@ redacted.ai used **4-digit OTPs** for login and forgot-password flows — wi
 
 I could easily bruteforce OTPs as they were only of 4 digits and Rate limits were not enforced.
 
-#### **Screenshot of The Attack:**
+### **Screenshot of The Attack:**
 
 ![](https://cdn-images-1.medium.com/max/1200/1*ISlZNs5U8yhWUcYqQ53hJA.png)
 
@@ -66,7 +66,7 @@ I could easily bruteforce OTPs as they were only of 4 digits and Rate limits wer
 
 * * *
 
-### 2️⃣ Business Logic Flaw — Wallet Be Like “Make It Rain 💸”
+## 2️⃣ Business Logic Flaw — Wallet Be Like “Make It Rain 💸”
 
 ![](https://cdn-images-1.medium.com/max/800/0*WI5l_f-2ztbS98FH.gif)
 
@@ -106,13 +106,13 @@ And the frontend:
 
 ![](https://cdn-images-1.medium.com/max/800/1*NY0xBDOplm6UryRAO7dwFA.png)
 
-#### 💡 Why This Is Critical:
+### 💡 Why This Is Critical:
 
 -   **No server-side validation** for wallet transactions.
 -   **Trusting frontend logic** for financial operations is a **massive red flag**.
 -   I was able to **manipulate the wallet balance** to any amount without any authentication or verification.
 
-#### 🛡️ Impact:
+### 🛡️ Impact:
 
 -   Unauthorized wallet crediting
 -   Leads to potential purchase abuse, gift card fraud, or platform exploitation
@@ -120,19 +120,19 @@ And the frontend:
 
 * * *
 
-### **3️⃣ Stored XSS in Resume Upload (PDF) and SVG Upload**
+## **3️⃣ Stored XSS in Resume Upload (PDF) and SVG Upload**
 
 ![](https://cdn-images-1.medium.com/max/800/0*1aB4TW-qyCRlUQox.gif)
 
 The platform allowed users to upload their **resumes as PDFs** and **profile pictures as SVGs** — both of which were vulnerable to **Stored Cross-Site Scripting (XSS)**.
 
-#### **PDF Upload: Stored XSS 🪓**
+### **PDF Upload: Stored XSS 🪓**
 
 I crafted a malicious PDF file containing JavaScript payloads and uploaded it via the resume upload section. When any admin or HR opened this document **in-browser**, the JavaScript executed silently in their context.
 
 This led to **persistent XSS**, as the PDF was stored and retrievable via a direct link — no sanitization or validation of file contents!
 
-#### **SVG Upload: Stored XSS Again!** 🧠
+### **SVG Upload: Stored XSS Again!** 🧠
 
 All I had to do is update :
 
@@ -154,7 +154,7 @@ SVG images are actually **XML files** — and JavaScript can be embedded dir
 
 * * *
 
-### 5️⃣ Mobile Number Verification Bypass
+## 5️⃣ Mobile Number Verification Bypass
 
 ![](https://cdn-images-1.medium.com/max/800/0*gH7NS9HFoB2De_XL.gif)
 
@@ -186,7 +186,7 @@ And that returned with:
 
 * * *
 
-### About the Authors:
+## About the Authors:
 
 ![](https://cdn-images-1.medium.com/max/800/0*RucizFrRvuSfZDBr.gif)
 

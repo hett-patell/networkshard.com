@@ -12,21 +12,21 @@ _This write-up has been prepared under the guidance of_ [_Amish Patel_](https://
 
 * * *
 
-### What is Pre-Account Takeover?
+## What is Pre-Account Takeover?
 
 Pre-Account Takeover (Pre-ATO) represents a sophisticated evolution in identity-based attacks. Unlike traditional account takeover, which targets existing accounts, Pre-ATO attacks focus on compromising user identities _before_ legitimate accounts are created. This subtle but critical distinction makes these attacks particularly insidious and difficult to detect.
 
 The core concept revolves around threat actors positioning themselves to gain control of accounts at the moment of creation or to intercept verification processes during registration. They effectively “reserve” the ability to compromise an account that doesn’t yet exist but will likely be created in the future.
 
-### The Mechanics: How Pre-ATO Works
+## The Mechanics: How Pre-ATO Works
 
 Pre-ATO attacks exploit the gap between when a user decides to create an account and when they actually complete the registration process. Consider these scenarios:
 
-#### 1\. Domain Registration Interception
+### 1\. Domain Registration Interception
 
 Many users register accounts using corporate or educational email addresses. Attackers monitor domain registration expirations and pounce when organizations forget to renew their domains, registering them first and gaining the ability to receive all emails sent to that domain — including account verification links.
 
-#### 2\. Typosquatting Email Domains
+### 2\. Typosquatting Email Domains
 
 Attackers register domains that closely resemble legitimate ones:
 
@@ -36,7 +36,7 @@ Attackers register domains that closely resemble legitimate ones:
 
 When users mistype their email during registration, verification emails go to attacker-controlled addresses.
 
-#### 3\. Dormant Account Creation
+### 3\. Dormant Account Creation
 
 For popular services or anticipated new platforms, attackers proactively create accounts using common usernames, business names, or personal identifiers, hoping legitimate users will try to register these later and either:
 
@@ -44,7 +44,7 @@ For popular services or anticipated new platforms, attackers proactively create 
 -   Contact support, potentially exposing more personal information
 -   Choose less secure alternative credentials they’re more likely to forget
 
-#### 4\. Registration Process Manipulation
+### 4\. Registration Process Manipulation
 
 Some Pre-ATO attacks target the registration workflow itself through:
 
@@ -52,7 +52,7 @@ Some Pre-ATO attacks target the registration workflow itself through:
 -   Man-in-the-middle attacks intercepting verification codes
 -   Race conditions exploiting timing vulnerabilities in verification processes
 
-### Common Attack Vectors for Pre-ATO
+## Common Attack Vectors for Pre-ATO
 
 1\. Abandoned Sign-Up Exploitation
 
@@ -62,11 +62,11 @@ Some Pre-ATO attacks target the registration workflow itself through:
 
 4\. Identity Correlation Attacks
 
-### Early Warning Signs of Pre-ATO Attacks
+## Early Warning Signs of Pre-ATO Attacks
 
 Organizations and users should watch for these indicators:
 
-#### For Organizations
+### For Organizations
 
 1.  **Unusual Registration Patterns**:
 
@@ -86,7 +86,7 @@ Organizations and users should watch for these indicators:
 -   Typosquatted versions of your domain becoming active.
 -   Sudden DNS changes to competitor or partner domains.
 
-#### For Individuals:
+### For Individuals:
 
 1.  **Unexpected Account Notifications**:
 
@@ -106,9 +106,9 @@ Organizations and users should watch for these indicators:
 -   Important emails suddenly arriving in spam folders.
 -   Notices about email forwarding you didn’t set up.
 
-### Comprehensive Mitigation Strategies
+## Comprehensive Mitigation Strategies
 
-#### For Organizations
+### For Organizations
 
 **1\. Robust Registration Processes:**
 
@@ -138,7 +138,7 @@ Organizations and users should watch for these indicators:
 -   Implement DMARC, SPF, and DKIM for email authentication.
 -   Monitor for lookalike domain registrations.
 
-#### For Individuals:
+### For Individuals:
 
 **1\. Proactive Identity Management**
 
@@ -161,7 +161,7 @@ Organizations and users should watch for these indicators:
 
 * * *
 
-### Conclusion
+## Conclusion
 
 Pre-Account Takeover represents an evolving threat that exploits the often-overlooked gap between identity intention and identity creation. By attacking users before they’ve established their digital presence on a platform, attackers gain a significant advantage and can remain undetected for extended periods.
 

@@ -9,7 +9,7 @@ pinned: true
 
 ![](https://cdn-images-1.medium.com/max/800/1*FET9FfzNnFiAum2nLDPMJA.jpeg)
 
-#### Introduction:
+### Introduction:
 
 Getting recognized by CERT-In (Indian Computer Emergency Response Team) is a milestone for many bug bounty hunters and security researchers in India.
 
@@ -71,7 +71,7 @@ A few crafted payloads later, it was confirmed:
 
 **_The endpoint was vulnerable to SQL Injection._**
 
-#### CERT-In Hall of fame:
+### CERT-In Hall of fame:
 
 My reports were validated, patched, and acknowledged.
 
@@ -101,7 +101,7 @@ My reports were validated, patched, and acknowledged.
 
 * * *
 
-#### Final Thoughts
+### Final Thoughts
 
 ![](https://cdn-images-1.medium.com/max/800/1*XW_R9WWXDpwzbEZCRBikdw.png)
 
@@ -117,7 +117,7 @@ Your next discovery might be much bigger than you think.
 
 * * *
 
-#### About Me
+### About Me
 
 **Het Patel** - VAPT Intern | CRTA | Cybersecurity Researcher | Bug Hunter | Top 2% THM | Coffee Addict ☕
 

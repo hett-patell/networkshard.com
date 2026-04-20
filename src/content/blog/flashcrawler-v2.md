@@ -20,7 +20,7 @@ So there I was, manually copying URLs from websites like some kind of digital ca
 
 Enter **Flash\_Crawler** — a tool that made me realize I’ve been living my entire developer life wrong.
 
-### What Even Is This Thing?
+## What Even Is This Thing?
 
 **Flash\_Crawler** is basically that friend who remembers everyone’s name at a party, except instead of people, it remembers every single URL on a website. And instead of awkward small talk, it uses JavaScript-aware crawling with Playwright to actually _understand_ modern websites.
 
@@ -36,7 +36,7 @@ So basically **FlashCrawler v2.0** is a Python + Playwright-based crawler that:
 -   Supports random user-agents (because websites judge bots too harshly)
 -   Looks good doing it (thanks, Rich library 👑)
 
-### 🐛 Bug Hunters Be Like:
+## 🐛 Bug Hunters Be Like:
 
 > _“Okay, I found a target domain… now where’s the juicy stuff?”_
 
@@ -44,13 +44,13 @@ Modern websites are **script-driven** nightmares. HTML-only crawlers? They die i
 
 FlashCrawler, on the other hand, shows up with Playwright, loads JavaScript, and finds **links normal crawlers can’t even see.**
 
-### 🎯 Why You’ll Love FlashCrawler
+## 🎯 Why You’ll Love FlashCrawler
 
 ![](https://cdn-images-1.medium.com/max/800/1*WbgvQoz-4YRItwFiN5ncPA.png)
 
 * * *
 
-### ⚙️ Quick Setup
+## ⚙️ Quick Setup
 
 1.  Clone the repo:
 
@@ -66,7 +66,7 @@ python FlashCrawler.py -u https://example.com --save --random-agent
 
 > Pro tip: Add `-d 50 -t 2` for deeper scans with polite delays.
 
-### Output You Can Actually Use
+## Output You Can Actually Use
 
 When `--save` is enabled, FlashCrawler organizes your recon loot:
 
@@ -76,7 +76,7 @@ results/├── found_urls.txt             ← All discovered URLs├── fo
 
 No messy CSVs. Just plain, hacker-friendly text.
 
-### 😂 Sites When They See FlashCrawler Coming:
+## 😂 Sites When They See FlashCrawler Coming:
 
 ![](https://cdn-images-1.medium.com/max/800/1*aeIjy5Tcx7Pf5TdVxqxDYg.gif)
 
@@ -84,7 +84,7 @@ But seriously, it behaves nicely — if you use polite settings (`-t 2` adds
 
 * * *
 
-### 🚀 Try It Now
+## 🚀 Try It Now
 
 Grab it from GitHub:
 

@@ -14,7 +14,7 @@ Back in 2014, there was this crazy bug in Bash that basically let hackers run wh
 
 * * *
 
-### What is Shellshock?
+## What is Shellshock?
 
 Shellshock refers to a series of vulnerabilities in the GNU Bash (Bourne Again SHell), a command-line shell widely used in Unix-like systems, including Linux and macOS. The primary vulnerability, tracked as **CVE-2014–6271**, was publicly disclosed on September 24, 2014, by researcher Stéphane Chazelas.
 
@@ -26,7 +26,7 @@ In simple terms: Bash doesn’t properly parse certain environment variables, al
 
 * * *
 
-### How Does Shellshock Work?
+## How Does Shellshock Work?
 
 To understand the mechanics, let’s look at how Bash processes environment variables. Normally, you can define a function in an environment variable like this:
 
@@ -56,7 +56,7 @@ In some cases, the exploit attempt is clearly visible within the host name HTTP 
 
 * * *
 
-### CVEs Related to Shellshock:
+## CVEs Related to Shellshock:
 
 -   **CVE-2014–6271**: The original vulnerability, enabling arbitrary code execution via crafted environment variables in Bash versions up to 4.3.
 -   **CVE-2014–7169**: An incomplete fix for the initial bug, still allowing file creation and potential denial-of-service attacks.
@@ -69,7 +69,7 @@ In some cases, the exploit attempt is clearly visible within the host name HTTP 
 
 ![](https://cdn-images-1.medium.com/max/800/0*QkUuYRXBBzNqHELZ.gif)
 
-### Finding Vulnerable Systems with Shodan:
+## Finding Vulnerable Systems with Shodan:
 
 -   **port:80 http.component:”apache” “cgi-bin”**: Finds HTTP Apache servers with exposed CGI directories.
 -   **http.title:”Apache2 Ubuntu Default Page” “Server: Apache/2.4.49”:** Detect Apache servers with default Ubuntu pages and specific server versions
@@ -79,18 +79,18 @@ In some cases, the exploit attempt is clearly visible within the host name HTTP 
 
 * * *
 
-### Some Tools and References related to Shellshock:
+## Some Tools and References related to Shellshock:
 
-#### ShellShockHunter:
+### ShellShockHunter:
 
 [**GitHub - MrCl0wnLab/ShellShockHunter: It's a simple tool for test vulnerability shellshock**  
 _It's a simple tool for test vulnerability shellshock - MrCl0wnLab/ShellShockHunter_github.com](https://github.com/MrCl0wnLab/ShellShockHunter "https://github.com/MrCl0wnLab/ShellShockHunter")[](https://github.com/MrCl0wnLab/ShellShockHunter)
 
-#### SonicWall SSL-VPN 8.0.0.0 — ‘visualdoor’ Remote Code Execution (Unauthenticated):
+### SonicWall SSL-VPN 8.0.0.0 — ‘visualdoor’ Remote Code Execution (Unauthenticated):
 
 [https://www.exploit-db.com/exploits/49499](https://www.exploit-db.com/exploits/49499)
 
-#### References:
+### References:
 
 [**Shellshock Exploits in the Wild**  
 _This post was authored by Joel Esler & Martin Lee. The recently discovered Bash vulnerability (CVE-2014-6271)…_blogs.cisco.com](https://blogs.cisco.com/security/talos/shellshock-exploits-in-the-wild "https://blogs.cisco.com/security/talos/shellshock-exploits-in-the-wild")[](https://blogs.cisco.com/security/talos/shellshock-exploits-in-the-wild)

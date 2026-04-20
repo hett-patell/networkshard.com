@@ -12,13 +12,13 @@ _This write-up has been prepared under the guidance of_ [_Amish Patel_](https://
 
 _Me, enjoying sweets while finding security holes…_
 
-### The Setup: Just Browsing Some Desserts…
+## The Setup: Just Browsing Some Desserts…
 
 What started as casual browsing on a traditional sweets website turned into an unexpected security adventure. Recently, I was looking through a popular dessert website (which shall remain unnamed for security reasons) and decided to create an account just to explore their offerings. Like most of us, I was just satisfying my curiosity about their sweet selection, not looking for security vulnerabilities.
 
 ![](https://cdn-images-1.medium.com/max/1200/1*i_Kv29qtBl3NbD3GvzIG-Q.png)
 
-### The Discovery: Wait, What’s This URL?
+## The Discovery: Wait, What’s This URL?
 
 After filling out the standard sign-up form with my email and password, I received a verification email as expected. Nothing unusual so far.
 
@@ -38,7 +38,7 @@ https://example-sweets.com//activeaccount.php?e=aGVzaXQ3MjM2N0BtYWdwaXQuY29t
 
 Being naturally curious (or nosy, depending on who you ask), I noticed something interesting about that link. The parameter _e=aGVzaXQ3MjM2N0BtYWdwaXQuY29t_ caught my attention.
 
-### The Experiment: Let’s Decode This…
+## The Experiment: Let’s Decode This…
 
 That string after the `e=` parameter looked familiar. With my limited but enthusiastic knowledge of web security, I recognized it as Base64 encoding. So I decided to decode it:
 
@@ -50,7 +50,7 @@ Well, well, well! That’s just my temp email address encoded in Base64. Now thi
 
 ![](https://cdn-images-1.medium.com/max/800/1*0jdXtb5fvq4LfYjr-p1S-Q.gif)
 
-### The Vulnerability: Security More Flaky Than Their Sweets
+## The Vulnerability: Security More Flaky Than Their Sweets
 
 Here’s where it gets concerning. If the verification system only checks for a Base64-encoded email in the URL, what’s stopping anyone from:
 
@@ -64,7 +64,7 @@ This means I could potentially:
 -   Take over accounts that haven’t been verified yet
 -   Generally cause sweet, sweet chaos
 
-### The Impact: Not Just About Sweets Anymore
+## The Impact: Not Just About Sweets Anymore
 
 While this might seem like a small issue on a dessert website, the implications can be serious:
 
@@ -73,7 +73,7 @@ While this might seem like a small issue on a dessert website, the implications 
 -   Account security is compromised
 -   Customer data could potentially be at risk
 
-### Conclusion: Security Is Like a Good Recipe
+## Conclusion: Security Is Like a Good Recipe
 
 This simple case demonstrates that security, like baking, requires attention to detail. A small mistake in the recipe can lead to the whole batch being compromised.
 

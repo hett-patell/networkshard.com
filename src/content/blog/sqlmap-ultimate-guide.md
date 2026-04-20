@@ -16,13 +16,13 @@ SQL injection remains one of the most prevalent and dangerous web application vu
 
 * * *
 
-### What is SQLMap?
+## What is SQLMap?
 
 SQLMap is a powerful open-source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws. Written in Python, it provides a feature-rich command-line interface that can identify and exploit vulnerabilities across numerous database management systems including MySQL, Oracle, PostgreSQL, Microsoft SQL Server, and many others.
 
 The project is actively maintained on [GitHub](https://github.com/sqlmapproject/sqlmap) and has become the de facto standard for SQL injection testing, used by security professionals worldwide.
 
-### Key Features
+## Key Features
 
 SQLMap offers an impressive range of capabilities:
 
@@ -39,9 +39,9 @@ SQLMap offers an impressive range of capabilities:
 
 ![](https://cdn-images-1.medium.com/max/800/1*TgA7qYMe9xcp5auz8FWJDA.png)
 
-### Getting Started with SQLMap
+## Getting Started with SQLMap
 
-#### Installation
+### Installation
 
 SQLMap requires Python to run and can be installed in several ways:
 
@@ -65,15 +65,15 @@ SQLMap comes pre-installed on Kali Linux, but you can update it with:
 apt update && apt install sqlmap
 ```
 
-#### **LET’S GET STARTED!!! 😈😈😈**
+### **LET’S GET STARTED!!! 😈😈😈**
 
 ![](https://cdn-images-1.medium.com/max/800/1*6JJDylRco8_aGUnhdTi44w.gif)
 
-#### But hey — wait!  
+### But hey — wait!  
 **Before accessing and trying SQLMap, make sure you have proper authorization.**  
  — ⚠️ Unauthorized testing is illegal and unethical. Always hack responsibly!
 
-#### Basic Usage That Won’t Make Your System Administrator Plot Your Demise:
+### Basic Usage That Won’t Make Your System Administrator Plot Your Demise:
 
 ```
 sqlmap -u http://target.com/page.php?id=1 --batch --dbs --threads=5 --random-agent --tamper=space2comment --crawl=2
@@ -91,13 +91,13 @@ That’s a basic SQLMap command consisting of:
 
 * * *
 
-### Advanced Usage of SQLMap 🚀
+## Advanced Usage of SQLMap 🚀
 
 ![](https://cdn-images-1.medium.com/max/800/1*_dQ2USARvgoJcr6fNEQJfA.gif)
 
 Once you’re comfortable with the basics, SQLMap offers a rich set of flags and options that allow you to take full control over the injection process. Below are a few advanced features commonly used by professionals:
 
-#### 1\. Dumping Table Data
+### 1\. Dumping Table Data
 
 ```
 sqlmap -u http://target.com/page.php?id=1 --tables -D db_name --dump
@@ -105,7 +105,7 @@ sqlmap -u http://target.com/page.php?id=1 --tables -D db_name --dump
 
 This command lists all tables in the specified database and dumps their content.
 
-#### 2\. Bypassing Login Forms
+### 2\. Bypassing Login Forms
 
 ```
 sqlmap -u "http://target.com/login.php" --data="username=admin&password=123" --batch --dump
@@ -113,7 +113,7 @@ sqlmap -u "http://target.com/login.php" --data="username=admin&password=123" --b
 
 SQLMap can test `POST` requests to bypass authentication and extract data from logged-in areas.
 
-#### 3\. Enumerating Users and Password Hashes
+### 3\. Enumerating Users and Password Hashes
 
 ```
 sqlmap -u http://target.com/page.php?id=1 --users --passwords
@@ -121,7 +121,7 @@ sqlmap -u http://target.com/page.php?id=1 --users --passwords
 
 Useful for privilege escalation testing, this command attempts to extract database user credentials.
 
-#### **BONUS TIP:**  
+### **BONUS TIP:**  
 Bypassing Web Application Firewalls Like a Digital Ninja
 
 WAFs try to stop SQLMap like bouncers at an exclusive club. SQLMap responds by putting on increasingly creative disguises:
@@ -132,7 +132,7 @@ sqlmap -u "http://target.com/page.php?id=1" --tamper=between,charencode,charunic
 
 * * *
 
-### Common Tamper Scripts 🧠
+## Common Tamper Scripts 🧠
 
 Tamper scripts are Python scripts used to modify payloads and evade detection or filtering mechanisms. Here are some commonly used ones:
 
@@ -146,7 +146,7 @@ Tamper scripts are Python scripts used to modify payloads and evade detection or
 
 * * *
 
-### Pro Tips & Best Practices ✅
+## Pro Tips & Best Practices ✅
 
 -   **Use verbosity flags** like `-v 3` to get detailed output for troubleshooting.
 -   **Always analyze traffic** with tools like Burp Suite or Wireshark to understand injection points.
@@ -156,7 +156,7 @@ Tamper scripts are Python scripts used to modify payloads and evade detection or
 
 * * *
 
-#### Conclusion: With Great Power Comes Great Potential for Database Mayhem
+### Conclusion: With Great Power Comes Great Potential for Database Mayhem
 
 SQLMap is a reminder that in the digital world, a question mark in the wrong place can be more dangerous than any lock-picking set. It’s a tool that teaches us that databases, like people, sometimes say more than they intend to when asked the right (or wrong) questions.
 

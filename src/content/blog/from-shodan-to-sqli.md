@@ -16,7 +16,7 @@ This is a real-world case study detailing how an exposed company dashboard was i
 
 * * *
 
-### The Reconnaissance Phase: Shodan’s Power
+## The Reconnaissance Phase: Shodan’s Power
 
 ![](https://cdn-images-1.medium.com/max/800/0*3d7ozKMAO-vAzWUI.gif)
 
@@ -32,7 +32,7 @@ Where I saw this !!!
 
 * * *
 
-### Discovering the Login Page
+## Discovering the Login Page
 
 ![](https://cdn-images-1.medium.com/max/800/1*VWcHFyy6JiBbMCnefzWX5w.png)
 
@@ -46,7 +46,7 @@ When I visited the IP, I noticed that directory listing was enabled, which expos
 
 * * *
 
-### Testing for SQL Injection
+## Testing for SQL Injection
 
 The first step was simple: I entered a single quote (`'`) into the username field. The application responded with a SQL syntax error. Jackpot.
 
@@ -62,7 +62,7 @@ From there, I crafted a basic payload to extract more details. Error messages re
 
 * * *
 
-### Accessing the Dashboard
+## Accessing the Dashboard
 
 Well, Using a simple payload:
 
@@ -82,7 +82,7 @@ The dashboard revealed whole internal system and at this point, I reported the i
 
 * * *
 
-### Conclusion
+## Conclusion
 
 This story underscores the power of Shodan when combined with simple testing techniques like SQL injection. The best defense? Assume attackers are running these scans every day because they are.
 
@@ -92,7 +92,7 @@ For ethical hackers: sometimes all it takes is curiosity and persistence to unco
 
 * * *
 
-### About Me
+## About Me
 
 **Het Patel** — VAPT Intern | Cybersecurity Researcher | Bug Hunter | Top 3% THM | Coffee Addict ☕
 

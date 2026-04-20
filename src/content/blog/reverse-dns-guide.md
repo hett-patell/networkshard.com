@@ -6,7 +6,7 @@ tags: ["dns", "networking", "recon"]
 readTime: "4 min read"
 ---
 
-### **Understanding Reverse DNS (rDNS) — A Behind-the-Scenes Lookup** 🔍
+## **Understanding Reverse DNS (rDNS) — A Behind-the-Scenes Lookup** 🔍
 
 **Special thanks to** [**Amish Patel**](https://cyberexpertamish.medium.com/) **and** [**Rey Patel**](https://medium.com/@cynex) **at** [**Hacker4Help**](https://medium.com/@hacker4help) **for their continued support and mentorship in my ongoing learning journey. 🙌**
 
@@ -28,7 +28,7 @@ You ask:
 
 > “Who owns the IP address `216.24.57.252`?”
 
-### In DNS terms:
+## In DNS terms:
 
 -   **Forward DNS:** `quickmeds-frontend-online.onrender.com` → `216.24.57.252`
 -   **Reverse DNS:** `216.24.57.252` → `quickmeds-frontend-online.onrender.com` _(or related domain, if configured)_
@@ -37,7 +37,7 @@ This process is handled using a special domain called `**in-addr.arpa**` (for IP
 
 * * *
 
-### 🧰 How Does Reverse DNS Work?
+## 🧰 How Does Reverse DNS Work?
 
 Reverse DNS uses **PTR (Pointer) records**. These are the reverse of A/AAAA records (used in forward DNS). For example:
 
@@ -49,27 +49,27 @@ This PTR record is configured by the organization that controls the IP block �
 
 * * *
 
-### **🧪 Why is Reverse DNS Important?**
+## **🧪 Why is Reverse DNS Important?**
 
 While rDNS isn’t required for internet functionality, it serves several critical purposes:
 
-#### ✅ 1. Email Server Authentication
+### ✅ 1. Email Server Authentication
 
 -   Most mail servers **check rDNS** of incoming connections to combat spam.
 -   A mismatch between rDNS and forward DNS can lead to emails being marked as spam or outright rejected.
 
-#### 🔐 2. Security and Forensics
+### 🔐 2. Security and Forensics
 
 -   Reverse DNS helps in **logging, tracing attacks, or analyzing logs**.
 -   Instead of seeing an IP in a log file, you see a domain, e.g., `cpe-101-11-12-13.socal.res.rr.com`.
 
-#### 🧩 3. Network Diagnostics
+### 🧩 3. Network Diagnostics
 
 -   Tools like `traceroute`, `ping`, and `whois` often show rDNS info to identify intermediate hops or hosts.
 
 * * *
 
-### 🛠️ How to Perform an rDNS Lookup
+## 🛠️ How to Perform an rDNS Lookup
 
 You can use command-line tools:
 
@@ -93,7 +93,7 @@ You can also use tools like `host`, `nmap`, or online rDNS lookup tools.
 
 * * *
 
-### 🧵 Wrapping Up
+## 🧵 Wrapping Up
 
 Reverse DNS may not be as popular as its forward counterpart, but it’s an essential part of the DNS ecosystem — quietly playing roles in email delivery, network troubleshooting, and security analytics.
 

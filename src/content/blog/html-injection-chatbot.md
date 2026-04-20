@@ -12,7 +12,7 @@ _This write-up has been prepared under the guidance of_ [_Amish Patel_](https://
 
 * * *
 
-### 🔍 Introduction
+## 🔍 Introduction
 
 As budding cybersecurity enthusiasts, we’re always on the lookout for vulnerable systems that can help us learn and sharpen our skills. One casual evening of testing led us — **Het Patel** and [**Kaif Shah**](https://medium.com/@SKaif009) — to discover a **Stored HTML Injection vulnerability** in the chatbot feature of redacted[.co.in](https://pyng.co.in), an AI-driven platform that connects users with verified professional experts across various categories.
 
@@ -22,7 +22,7 @@ So Let’s get started **😎**
 
 * * *
 
-### What is Stored HTML Injection? 💥
+## What is Stored HTML Injection? 💥
 
 Before we dive into the juicy details, let’s break down what **Stored HTML Injection** actually is (because not everyone speaks fluent hacker 🤓):
 
@@ -40,11 +40,11 @@ This can lead to:
 
 * * *
 
-### The Setup: Where We Found It 🧪
+## The Setup: Where We Found It 🧪
 
 While exploring the **AI chatbot feature** of pyng.co.in, we noticed an input field where users could send messages. At first, it seemed harmless — but our curiosity nudged us to test how it handled raw HTML.
 
-### Payload and Execution
+## Payload and Execution
 
 We entered the following simple HTML tag as our message:
 
@@ -65,13 +65,13 @@ However, since JavaScript execution was fully disabled, despite attempting multi
 
 * * *
 
-### Screenshot of Payload Execution
+## Screenshot of Payload Execution
 
 ![](https://cdn-images-1.medium.com/max/800/1*hhnaAsei0pc_D0CEi2zBpg.png)
 
 * * *
 
-### 📬 Responsible Disclosure
+## 📬 Responsible Disclosure
 
 We followed responsible disclosure practices:
 
@@ -88,7 +88,7 @@ They were already aware of the vulnerability so they marked our report as “Dup
 
 * * *
 
-### **About the Authors:**
+## **About the Authors:**
 
 ![](https://cdn-images-1.medium.com/max/800/1*NRR6i_VIh-HmfrQhX8yfFg.gif)
 

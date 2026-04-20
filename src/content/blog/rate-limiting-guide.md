@@ -14,7 +14,7 @@ _This write-up has been prepared under the guidance of_ [_Amish Patel_](https://
 
 Imagine this: you’re hosting a killer party (your API), and suddenly a group of bots shows up with 10,000 friends asking for snacks every millisecond. You’d panic, right? That’s when **rate limiting** jumps in like the bouncer you didn’t know you needed. 👮‍♂️
 
-### 💡 So, What Is Rate Limiting?
+## 💡 So, What Is Rate Limiting?
 
 ![](https://cdn-images-1.medium.com/max/800/1*o4tRXU0w3RQuLR6pfdm6eQ.gif)
 
@@ -24,7 +24,7 @@ In simple terms, **rate limiting** is your server’s way of saying:
 
 It controls how many requests a user (or a bot disguised as a user) can make to your server in a given time. If they go overboard, they get the digital version of a timeout — a 429 error code: **“Too Many Requests.”** 🧯
 
-### 🧪 Real-Life Analogy
+## 🧪 Real-Life Analogy
 
 ![](https://cdn-images-1.medium.com/max/800/1*Vd_7oAr8ZRSOUllCqugI2Q.gif)
 
@@ -37,7 +37,7 @@ It controls how many requests a user (or a bot disguised as a user) can make to 
 
 ![](https://cdn-images-1.medium.com/max/800/1*hGbvREwGAcpWMsosAexYog.gif)
 
-### The Five Stages of Rate Limit Grief
+## The Five Stages of Rate Limit Grief
 
 1.  **Denial**: “This can’t be happening. The server must be broken!”
 2.  **Anger**: _Violently mashes refresh button_ “WHY WON’T YOU LET ME IN?!”
@@ -47,7 +47,7 @@ It controls how many requests a user (or a bot disguised as a user) can make to 
 
 * * *
 
-### 🛠️ Common Algorithms Used
+## 🛠️ Common Algorithms Used
 
 1.  **Token Bucket** — Like carrying tokens to a carnival. No tokens = no rides. 🎟️
 2.  **Leaky Bucket** — Imagine requests dripping through a funnel. Too many = overflow = NOPE. 🚱
@@ -56,11 +56,11 @@ It controls how many requests a user (or a bot disguised as a user) can make to 
 
 * * *
 
-### 🕵️‍♂️ Bypassing Rate Limiting (Ethical Hacking Context)
+## 🕵️‍♂️ Bypassing Rate Limiting (Ethical Hacking Context)
 
 ![](https://cdn-images-1.medium.com/max/800/1*CDa-DR9wxLvEGyHTgLfLSQ.gif)
 
-#### 1\. Rotating IP Addresses (IP Spoofing / Proxy Chains)
+### 1\. Rotating IP Addresses (IP Spoofing / Proxy Chains)
 
 Many basic rate limiters track request count by IP address. So attackers:
 
@@ -70,7 +70,7 @@ Many basic rate limiters track request count by IP address. So attackers:
 
 > 🚧 Defense: Implement user authentication-based limits or fingerprinting in addition to IP.
 
-#### 2\. Modifying Headers
+### 2\. Modifying Headers
 
 Some rate limiters rely on headers like `X-Forwarded-For`.  
  Attackers may:
@@ -84,13 +84,13 @@ curl -H "X-Forwarded-For: 1.2.3.4" https://target.com/api
 
 > 🚧 Defense: Validate headers properly and don’t trust them blindly.
 
-#### 3\. Distributed Attacks (Botnets)
+### 3\. Distributed Attacks (Botnets)
 
 Using many compromised systems (zombies), attackers split the load across hundreds/thousands of nodes.
 
 > 🚧 Defense: Use Web Application Firewalls (WAFs) and behavioral analytics.
 
-#### 4\. Delays Between Requests
+### 4\. Delays Between Requests
 
 Some algorithms (like fixed window) are tricked by spacing requests slightly.
 
@@ -100,7 +100,7 @@ import timeimport requestsfor _ in range(100):    requests.get("https://api.exam
 
 > 🚧 Defense: Use sliding window or more aggressive detection mechanisms.
 
-#### 5\. Session Reset / Re-authentication
+### 5\. Session Reset / Re-authentication
 
 If rate limits are per session or token:
 
@@ -109,13 +109,13 @@ If rate limits are per session or token:
 
 > 🚧 Defense: Tie limits to account identity and enforce server-side session tracking.
 
-#### 6\. Multiple Accounts
+### 6\. Multiple Accounts
 
 Attackers register multiple fake accounts and rotate them.
 
 > 🚧 Defense: Use CAPTCHA, phone/email verification, and detect account behavior anomalies.
 
-#### 7\. Use of Alternate Endpoints
+### 7\. Use of Alternate Endpoints
 
 Sometimes, APIs expose the same functionality via multiple endpoints.
 
@@ -130,7 +130,7 @@ Abusing both can double the limit.
 
 * * *
 
-### Conclusion
+## Conclusion
 
 Rate limiting is the necessary evil we love to hate. It’s there to protect services from accidental DDoS attacks, malicious actors, and developers who haven’t had their coffee yet.
 
