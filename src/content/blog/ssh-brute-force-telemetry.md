@@ -1,23 +1,23 @@
 ---
 title: "SSH Under Siege: 30 Days of Brute-Force Telemetry on an Exposed VM 🌐"
-description: "1,595 attempts. 64 IPs. 20+ countries. A month of SSH brute-force traffic against my Oracle Cloud VM — by the numbers, with a globe to watch it."
+description: "1,595 brute-force attempts. 64 IPs. 20+ countries. A month of SSH login fails against my Oracle Cloud VM, with a globe to make it look impressive."
 date: 2026-04-25
 category: "operations"
 tags: ["ssh", "brute-force", "fail2ban", "oracle-cloud", "telemetry"]
 readTime: "6 min read"
 ---
 
-I provisioned an Oracle Cloud ARM VM a few months back. It runs Jellyfin, hosts some bug-bounty recon tooling, and otherwise just sits there minding its business. Today, on a whim, I ran `sudo journalctl -u ssh -S "30 days ago"` and grepped for failed logins.
+I provisioned an Oracle Cloud ARM VM a few months ago. It runs Jellyfin, holds my recon tooling, and otherwise sits there breathing quietly into the void. Today, on a whim, I ran `sudo journalctl -u ssh -S "30 days ago"` and grepped for failed logins.
 
 **1,595 brute-force attempts. 64 unique source IPs. ~20 countries.**
 
-I knew this was a thing. Every public IPv4 SSH port gets scanned within minutes of going live. Knowing it and watching it are different.
+I knew this was a thing. Every public IPv4 with port 22 open gets scanned within minutes of going up; this is well-documented. But knowing it and watching 1,500 strangers personally try to log in as `admin` are two very different feelings, and I was emotionally unprepared for the second one.
 
 * * *
 
-## The shape of the noise
+## Who's knocking?
 
-Top source IPs over 30 days:
+Top source IPs over 30 days, sorted by sheer determination:
 
 ```
    582  190.123.65.197    Betim, Brazil           Gerencia Telecom
@@ -30,15 +30,17 @@ Top source IPs over 30 days:
     46  111.52.249.29     Shanxi, CN              China Mobile
 ```
 
-The clustering is clear: **Techoff SRV / Unmanaged LTD** in NL/UK is one coordinated network, IONOS / Azure / GCP / Tencent / UCloud are abused cloud, and the rest is residential and mobile ISPs across BR, CN, VN, NG, PH.
+There is a single bot in Betim, Brazil that has tried 582 times this month. No backoff, no IP rotation, just one machine somewhere outside Belo Horizonte dialing my SSH like a stalker ex who hasn't gotten the message. I almost respect it.
 
-A single bot in Betim has tried 582 times this month. No backoff, no rotation, just a steady drumbeat of new SSH connections every few minutes.
+Then there's the cluster on "Unmanaged LTD" in Rushden, England. They have a real website. They describe themselves as "providing reliable hosting solutions". I am sure they are very reliable. The 3,000+ failed login attempts I have received from their network speak for themselves.
+
+The rest of the list is the usual buffet: abused cloud hosting (IONOS, Azure, GCP, Tencent, UCloud all show up further down), residential ISPs in BR/CN/VN/NG, and a couple of mobile carriers whose customers are presumably running malware they bought as a phone game.
 
 * * *
 
-## What they were trying
+## The username wishlist
 
-`sshd` only logs the username, never the password attempt — but the username list itself tells you what bots are scanning for. Top tries from the last 24 hours:
+`sshd` only logs the username, never the password. But the username list itself tells you what bots are scanning for. Top hits in the last 24 hours:
 
 ```
    193  user
@@ -51,30 +53,25 @@ A single bot in Betim has tried 582 times this month. No backoff, no rotation, j
     15  controll
     14  jacob
     14  ansible
-    13  jenkins
-    13  moodle
-    13  dell
-    10  jenkins
-     9  middleware
-     9  infocare
-     8  solana
 ```
 
-Three flavours stand out:
+A few of these deserve a closer look.
 
-**The classics.** `admin`, `user`, `root`, `oracle`, `postgres`, `redis`, `mysql`, `ftp`, `test`. The same wordlist that's been running since 2005.
+**`user`**. 193 attempts. The most generic possible username, and by far the most popular. There is genuinely a small but non-zero chance that some sysadmin somewhere created a Linux user literally named `user`, with the password `user`, and forgot about it. The bots are betting on that chance, every five minutes, forever.
 
-**DevOps service accounts.** `ansible`, `jenkins`, `nexus`, `moodle`, `n8n`, `odoo`, `azureuser`, `splunk`, `minioadmin`, `sonar`. Bots have figured out that self-hosted DevOps stacks tend to sprout dedicated Linux users with weak SSH credentials.
+**`controll`**. 15 attempts. They misspelled "control" in the wordlist. I think this typo has been propagating through botnet codebases for the better part of a decade. Some kid copy-pasted it once in 2014 and now it is part of internet history. Future archaeologists will find `controll` in our digital sediment.
 
-**The crypto rush.** `sol`, `solana`, `solv`, `jito`, `validator`, `raydium`, `sollet`, `shredstream`, `degen`, `doge` — combined ~109 hits over 30 days. Bots are now actively looking for Solana validator nodes and MEV relayers running on hobbyist VMs. That's a new class of target showing up in commodity wordlists.
+**`jacob`**. 14 attempts. There is a Jacob, somewhere out there, who set up a server, used his own first name as the SSH login, picked a password like `jacob123`, and got pwned. The botnet remembers. Jacob's mistake will outlive him. I think about Jacob a lot.
 
-If you're running a Solana validator on a public VM with a username like `sol`, you're already on every botnet's list.
+**`solana`, `sol`, `solv`, `jito`, `validator`, `raydium`, `shredstream`**. Combined ~109 hits this month. Bots have figured out that hobbyists are running Solana validators on commodity VMs with painfully predictable usernames. If you have a validator running and your SSH user is literally `sol`, please know that at this exact moment the entire internet is taking turns trying to crack your account. Make better choices.
+
+The rest is just the regular DevOps list: `ansible`, `jenkins`, `nexus`, `moodle`, `n8n`, `odoo`, `azureuser`, `splunk`, `minioadmin`, `sonar`. Bots have noticed that self-hosted DevOps stacks tend to sprout dedicated Linux users with weak SSH passwords, and now those usernames are in everybody's wordlist. Sorry to whoever first set up `jenkins:jenkins` on a public box. You ruined it for the rest of us.
 
 * * *
 
 ## How nothing got in
 
-Five lines of `/etc/ssh/sshd_config` is the entire defense:
+Five lines of `/etc/ssh/sshd_config`:
 
 ```
 PasswordAuthentication no
@@ -84,35 +81,39 @@ ChallengeResponseAuthentication no
 KbdInteractiveAuthentication no
 ```
 
-With password auth disabled, every one of those 1,595 attempts terminates at "Connection closed by invalid user [...] [preauth]". The bot never even sees an authentication prompt. fail2ban catches the loud ones and ips them out for 10 minutes; over the month it has banned 132 unique IPs.
+That is the entire defense.
 
-The brute-force traffic is not a threat to a properly configured box. It's just background radiation.
+With password auth disabled, every one of those 1,595 attempts terminates at "Connection closed by invalid user [...] [preauth]". The bot never even gets to the password prompt. fail2ban catches the loud ones and IP-bans them for ten minutes; over the month it has banned 132 distinct addresses. They come back. fail2ban bans them again. The cycle continues. It is the digital equivalent of slowly closing a door on a Jehovah's Witness who refuses to leave.
+
+Brute-force traffic is not a threat to a properly configured box. It is just background radiation. Like cosmic rays, except angrier and from Brazil.
 
 * * *
 
-## I built a dashboard
+## I built a thing
 
-Once I had the data, I couldn't *not* visualise it. I asked Claude to build me a dashboard with a spinning globe, glowing dots at every attacker location, animated arcs from each IP back to my Mumbai box, and live-feed widgets on the side. NASA Black Marble for the texture, `globe.gl` for the rendering, Tailscale for serving it locally while I iterated.
+Once I had the data, I had to look at it on a globe. I asked Claude to put together a dashboard with a spinning Earth, glowing dots at every attacker location, animated arcs from each IP back to my box in Mumbai, and live-feed widgets on the side. The texture is NASA's Black Marble (the city-lights one), the rendering is `globe.gl` on Three.js, and the JSON is regenerated by a Python script that parses `journalctl` and pings `ip-api.com` for geo data.
 
 [**→ Live dashboard**](/ssh-attacks/)
 
-What you're looking at:
+![SSH attack telemetry dashboard — globe with attacker locations, side widgets showing top countries and live feed](/images/ssh-attacks-dashboard.png)
 
-- Every red glowing dot = an attacker IP, sized by hit count
-- Every animated arc = an attempt arriving at my VM
-- Pulsing green dot = the box itself (Mumbai)
+What you are looking at:
+
+- Red dots: attacker IPs, sized by hit count
+- Animated arcs: attempts arriving at the box
+- Pulsing green dot in Mumbai: the box itself
 - Side widgets: top countries, top source IPs, top usernames tried, scrolling live feed
 
-The data file is regenerated by a Python script that parses `journalctl`, hits ip-api.com for geo, and writes out a JSON. Static, no server, no live polling — but the snapshot is fresh.
+Is this objectively overkill for what amounts to a really fancy `tail -f`? Yes. But every time I open it I think *oh, hello Lagos. Hello Shanghai. Hello São Paulo. Hello whatever bot is having a bad day in Vietnam right now*, and it makes me feel something close to fondness for the people trying to break into my server. Not a healthy fondness. But still.
 
 * * *
 
-## Takeaways
+## What you should do if you have a VM
 
-If you run anything internet-exposed, three things:
+Three boring rules. They will spare you 99% of the noise.
 
-1. **Disable password auth.** This is the single most important SSH config change. Pubkey-only and you can ignore the brute-force noise forever.
-2. **Don't trust default usernames.** `admin`, `oracle`, `postgres`, `solana`, `jenkins` — bots are checking for all of them. Either don't create them, or make sure they have no shell.
-3. **Read your logs once in a while.** Not because you'll find a breach, but because seeing 1,500 attempts a month is a useful gut check on what "exposed to the internet" actually means.
+1. **Disable password auth.** Set `PasswordAuthentication no`, restart sshd, sleep better. Pubkey-only auth is so much stronger than even a great password that there is no contest.
+2. **Don't trust default usernames.** `admin`, `oracle`, `postgres`, `solana`, `jenkins`, `jacob` (sorry Jacob) — bots are checking for all of them. Either don't create them, or give them `/usr/sbin/nologin` as a shell.
+3. **Read your logs once in a while.** Not because you'll find an actual breach. Because watching 1,500 people fail to break in is genuinely entertaining over morning coffee, and a good reminder that "exposed to the internet" means *exposed to the actual internet*, not the friendly one that lives in your browser tabs.
 
-The internet is a loud neighbourhood. Lock the door, then enjoy the noise.
+The internet is a loud neighbourhood. Lock the door, install a peephole, and enjoy the show.
