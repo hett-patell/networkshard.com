@@ -378,6 +378,21 @@
 .prose hr {
   @apply border-border my-6;
 }
+.prose table {
+  @apply w-full my-4 border-collapse text-sm;
+}
+.prose thead {
+  @apply border-b-2 border-border;
+}
+.prose th {
+  @apply text-left font-semibold text-foreground px-3 py-2 border border-border bg-muted;
+}
+.prose td {
+  @apply px-3 py-2 border border-border;
+}
+.prose tr:nth-child(even) {
+  background: color-mix(in srgb, var(--muted) 30%, transparent);
+}
 
 /* Code block copy button */
 .code-block-wrapper {
