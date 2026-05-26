@@ -13,73 +13,80 @@ const projects: ProjectItem[] = [
     {
         name: "ShardC2",
         description:
-            "Policy-aware command-and-control framework for authorized red team operations and security research, with a Go server/agent architecture, operator dashboard, RBAC, audit logs, encrypted payload support, and safety controls.",
-        tech: [
-            "Go",
-            "JavaScript",
-            "PostgreSQL",
-            "Redis",
-            "WebSocket",
-            "Docker",
-        ],
+            "Policy-aware command-and-control framework for authorized red team operations. Go server/agent core with an operator dashboard, RBAC, audit logs, encrypted payloads, and built-in safety controls.",
+        tech: ["Go", "PostgreSQL", "Redis", "WebSocket", "Docker"],
         github: "https://github.com/hett-patell/ShardC2",
+    },
+    {
+        name: "ShardLure",
+        description:
+            "SSH honeypot that clusters bots by HASSH and username playbook instead of IP. Cowrie + journal ingest, intent classification, live globe dashboard, stealth persona with bait files, and STIX 2.1 IOC export.",
+        tech: ["Go", "Python", "SQLite", "Cowrie", "HASSH", "STIX"],
+        github: "https://github.com/hett-patell/ShardLure",
+    },
+    {
+        name: "ShardFlow",
+        description:
+            "Layer-2 LAN workbench for authorized lab use. Discovers every device on the wire (ARP, mDNS, SSDP, OUI) and applies per-target drop, throttle, or silent pcap policies via nftables, tc/IFB, and AF_PACKET ARP poisoning. TUI + JSON-RPC CLI.",
+        tech: ["Go", "Linux", "nftables", "libpcap", "AF_PACKET", "JSON-RPC"],
+        github: "https://github.com/hett-patell/ShardFlow",
     },
     {
         name: "ShardPass",
         description:
-            "Local-first Chrome MV3 TOTP authenticator with inline autofill, encrypted local vault, QR/import flows, and multi-account matching for 2FA-heavy workflows.",
-        tech: ["TypeScript", "React", "Chrome MV3", "Tailwind", "Vite", "Bun"],
+            "Local-first Chrome MV3 TOTP authenticator with inline autofill, an encrypted local vault, QR / otpauth import, and per-domain account matching for 2FA-heavy workflows.",
+        tech: ["TypeScript", "React", "Tailwind", "Vite", "Chrome MV3"],
         github: "https://github.com/hett-patell/ShardPass",
     },
     {
         name: "SSH Attack Telemetry",
         description:
-            "Live globe visualising 30 days of SSH brute-force attempts against my exposed Oracle Cloud VM. 1,595 attempts, 64 unique IPs, 20+ countries — all bounced off pubkey-only auth.",
-        tech: ["Astro", "globe.gl", "Three.js", "Python", "journalctl"],
+            "Live globe visualising 30 days of SSH brute-force attempts against my exposed Oracle Cloud VM — 1,595 attempts, 64 unique IPs, 20+ countries, all bounced off pubkey-only auth.",
+        tech: ["Astro", "Three.js", "globe.gl", "Python", "journalctl"],
         href: "/ssh-attacks/",
     },
     {
         name: "VulnInsights",
         description:
-            "Vulnerability insights and tracking dashboard for security assessments and penetration testing workflows.",
-        tech: ["TypeScript", "CSS", "JavaScript"],
+            "Vulnerability tracking dashboard for security assessments and penetration testing workflows, with status tracking, severity scoring, and finding-level notes.",
+        tech: ["TypeScript", "JavaScript", "CSS"],
         github: "https://github.com/hett-patell/vulninsights",
     },
     {
         name: "Cinemax",
         description:
-            "Full-stack movie booking and management platform with user-facing frontend and admin panel.",
-        tech: ["PHP", "JavaScript", "CSS", "HTML"],
+            "Full-stack movie booking and theatre management platform with a customer-facing frontend and an admin panel for shows, seats, and bookings.",
+        tech: ["PHP", "JavaScript", "MySQL", "HTML", "CSS"],
         github: "https://github.com/hett-patell/cinemax",
     },
     {
         name: "QuickMeds",
         description:
-            "Quick medicine lookup and pharmacy management application.",
-        tech: ["JavaScript", "Pharmacy", "Medicine Lookup"],
+            "Medicine lookup and pharmacy management app for fast inventory search, stock tracking, and over-the-counter prescription handling.",
+        tech: ["JavaScript", "HTML", "CSS"],
         github: "https://github.com/hett-patell/QuickMeds",
     },
     {
         name: "Table No 21",
         description:
-            "Restaurant POS (Point of Sale) system for streamlined order management, billing, and table tracking.",
-        tech: ["POS", "Restaurant Management", "Order System"],
+            "Restaurant point-of-sale system for streamlined order entry, billing, and live table tracking across dine-in and takeaway flows.",
+        tech: ["PHP", "JavaScript", "MySQL", "HTML", "CSS"],
     },
 ];
 
 const tools: ProjectItem[] = [
     {
-        name: "Smoker Shell Refined",
+        name: "ShardShell",
         description:
-            "Refined PHP shell toolkit for authorized penetration testing labs, organized into Linux and Windows variants with OS-aware assessment modules.",
-        tech: ["PHP", "Linux", "Windows", "Red Teaming"],
-        github: "https://github.com/hett-patell/Smoker-backdoor-refined",
+            "Refined PHP post-exploitation shell for authorized red team engagements, with separate Linux and Windows variants tuned to OS-native recon, priv-esc, and log-clearing. Ships with a Python build-time obfuscator and self-decrypting loader for AV evasion.",
+        tech: ["PHP", "Python", "Linux", "Windows"],
+        github: "https://github.com/hett-patell/ShardShell",
     },
     {
         name: "ShardPet",
         description:
-            "Chromium MV3 extension that drops 1–3 animated Gen 5 Pokémon onto every page, plus a per-hostname productivity nag that triggers a fullscreen “get back to work” overlay. Shadow-DOM isolated, GPU-only animation, and offline after first sprite cache.",
-        tech: ["TypeScript", "Chrome MV3", "Vite", "Vitest", "Shadow DOM"],
+            "Chromium MV3 extension that drops 1–3 animated Gen 5 Pokémon onto every page, with a per-hostname productivity nag that triggers a fullscreen “get back to work” overlay. Shadow-DOM isolated, GPU-only animation, offline after first sprite cache.",
+        tech: ["TypeScript", "Vite", "Vitest", "Chrome MV3", "Shadow DOM"],
         github: "https://github.com/hett-patell/ShardPet",
     },
 ];
