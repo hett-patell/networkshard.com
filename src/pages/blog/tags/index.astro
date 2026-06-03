@@ -1,18 +1,22 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../../../lib/posts';
+import { slugify } from '../../../lib/slugify';
 
-const posts = await getCollection('blog');
-const tagCounts: Record<string, number> = {};
+const posts = await getPublishedPosts();
 
+// Group by slug so divergent casings (e.g. "CVE" / "cve") collapse to one chip.
+const tagMap = new Map<string, { label: string; count: number }>();
 for (const post of posts) {
-  if (post.data.draft) continue;
   for (const tag of post.data.tags || []) {
-    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    const slug = slugify(tag);
+    const current = tagMap.get(slug);
+    if (current) current.count += 1;
+    else tagMap.set(slug, { label: tag, count: 1 });
   }
 }
 
-const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+const sortedTags = [...tagMap.entries()].sort((a, b) => b[1].count - a[1].count);
 ---
 
 <BaseLayout title="Tags — Blog" description="Browse cybersecurity articles by topic and category.">
@@ -23,12 +27,12 @@ const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
     </header>
 
     <div class="flex flex-wrap gap-2">
-      {sortedTags.map(([tag, count]) => (
+      {sortedTags.map(([slug, { label, count }]) => (
         <a
-          href={`/blog/tags/${tag}`}
+          href={`/blog/tags/${slug}`}
           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-mono border border-border/60 bg-muted/50 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
         >
-          {tag}
+          {label}
           <span class="text-[10px] text-muted-foreground/60">{count}</span>
         </a>
       ))}

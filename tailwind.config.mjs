@@ -19,9 +19,8 @@ export default {
         border: 'var(--border)',
       },
       fontFamily: {
-        sans: ['Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-        brand: ['Plus Jakarta Sans', 'var(--font-sans)'],
       },
       maxWidth: {
         '3xl': '48rem',

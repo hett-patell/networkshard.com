@@ -14,11 +14,15 @@
     "@astrojs/tailwind": "^6.0.2",
     "@fontsource/geist-mono": "^5.2.7",
     "astro": "^4.16.0",
+    "markdown-it": "^14.2.0",
+    "sanitize-html": "^2.17.4",
     "satori": "^0.26.0",
     "sharp": "^0.34.5",
-    "tailwindcss": "^3.4.19"
+    "tailwindcss": "^3.4.19",
+    "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
-    "turndown": "^7.2.2"
+    "@types/markdown-it": "^14.1.2",
+    "@types/sanitize-html": "^2.16.1"
   }
 }

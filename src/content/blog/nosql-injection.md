@@ -1,6 +1,6 @@
 ---
 title: "NoSQL Injection: Exploitation Techniques and Attack Scenarios 💣"
-description: "NoSQL Injection: Exploitation Techniques and Attack Scenarios 💣"
+description: "Exploiting NoSQL injection—syntax and operator injection ($ne, $in, $regex)—to bypass authentication and extract data from MongoDB-style databases."
 date: 2025-07-25
 tags: ["nosql", "injection", "web-security"]
 readTime: "6 min read"

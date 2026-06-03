@@ -1,6 +1,6 @@
 ---
 title: "Business Logic: Broken. Wallet: Hacked. OTP: Bypassed."
-description: "Business Logic: Broken. Wallet: Hacked. OTP: Bypassed."
+description: "Chaining an OTP bypass, a wallet-balance business-logic flaw, and a stored XSS in file uploads to compromise a virtual assistance platform."
 date: 2025-07-19
 tags: ["business-logic", "otp-bypass", "xss"]
 readTime: "7 min read"

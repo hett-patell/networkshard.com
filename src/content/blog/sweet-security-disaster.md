@@ -1,6 +1,6 @@
 ---
 title: "Sweet Security Disaster: How I Could Verify Any Account on a Dessert Website 🍦"
-description: "Sweet Security Disaster: How I Could Verify Any Account on a Dessert Website 🍦"
+description: "An account-verification bypass on a dessert site: a Base64-encoded email parameter with no server-side validation let me activate any account."
 date: 2025-05-09
 tags: ["bug-bounty", "account-takeover"]
 readTime: "4 min read"

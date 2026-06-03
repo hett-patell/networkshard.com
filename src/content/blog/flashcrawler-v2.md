@@ -1,6 +1,6 @@
 ---
 title: "FlashCrawler v2.0 — The Hacker’s Browser-Powered, JavaScript-Crunching Web Crawler"
-description: "FlashCrawler v2.0 — The Hacker’s Browser-Powered, JavaScript-Crunching Web Crawler"
+description: "Building a browser-powered web crawler with Python and Playwright that executes JavaScript and surfaces endpoints hidden in script tags for recon."
 date: 2025-05-22
 tags: ["tools", "crawler", "javascript"]
 readTime: "5 min read"

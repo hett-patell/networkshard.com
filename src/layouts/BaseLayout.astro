@@ -1,14 +1,19 @@
 ---
 import '../styles/global.css';
+import NavLink from '../components/NavLink.astro';
+import { breadcrumbSchema } from '../lib/jsonld';
+
+type JsonLd = Record<string, unknown>;
 
 interface Props {
   title: string;
   description?: string;
   image?: string;
-  jsonLd?: Record<string, unknown>;
+  ogType?: string;
+  jsonLd?: JsonLd | JsonLd[];
 }
 
-const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research.", image, jsonLd } = Astro.props;
+const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research.", image, ogType = 'website', jsonLd } = Astro.props;
 const currentPath = Astro.url.pathname;
 const buildCommit =
   import.meta.env.PUBLIC_COMMIT_SHA?.slice(0, 7) ||
@@ -27,6 +32,12 @@ const breadcrumbs = [
     href: '/' + pathSegments.slice(0, i + 1).map((s) => encodeURIComponent(s)).join('/'),
   })),
 ];
+
+// Collect all JSON-LD blocks: caller-provided (object or array) + an
+// auto-generated BreadcrumbList for any non-home page.
+const providedLd: JsonLd[] = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const crumbLd = breadcrumbSchema(breadcrumbs);
+const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
 ---
 
 <!DOCTYPE html>
@@ -47,7 +58,7 @@ const breadcrumbs = [
   <meta name="author" content="Het Patel" />
   <meta property="og:title" content={`${title} | networkshard`} />
   <meta property="og:description" content={description} />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={ogType} />
   <meta property="og:url" content={Astro.url.href} />
   {image && <meta property="og:image" content={image} />}
   {image && <meta property="og:image:width" content="1200" />}
@@ -62,11 +73,14 @@ const breadcrumbs = [
   <link rel="canonical" href={Astro.url.href} />
   <link rel="sitemap" href="/sitemap-index.xml" />
   <link rel="preload" href="/fonts/GeistMonoVF.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="/fonts/GeistVF.woff2" as="font" type="font/woff2" crossorigin />
   <title>{title} — networkshard</title>
-  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  {jsonLdBlocks.map((block) => (
+    <script type="application/ld+json" set:html={JSON.stringify(block)} />
+  ))}
 </head>
 <body class="flex min-h-screen flex-col gap-y-6 font-mono">
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
 
   <!-- Header -->
   <header class="bg-background/80 sticky top-0 z-50 w-full backdrop-blur-xl border-b border-border/40">
@@ -77,27 +91,9 @@ const breadcrumbs = [
 
         <div class="flex items-center gap-2 md:gap-6">
           <nav class="hidden items-center gap-1 text-sm font-medium md:flex" aria-label="Primary navigation">
-            <a href="/blog"
-              class:list={[
-              "px-3 py-2 rounded-full transition-all duration-200",
-                currentPath.startsWith('/blog')
-                  ? "text-foreground bg-foreground/5"
-                  : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
-              ]}>Blog</a>
-            <a href="/projects"
-              class:list={[
-              "px-3 py-2 rounded-full transition-all duration-200",
-                currentPath.startsWith('/projects')
-                  ? "text-foreground bg-foreground/5"
-                  : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
-              ]}>Projects</a>
-            <a href="/about"
-              class:list={[
-              "px-3 py-2 rounded-full transition-all duration-200",
-                currentPath.startsWith('/about')
-                  ? "text-foreground bg-foreground/5"
-                  : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
-              ]}>About</a>
+            <NavLink href="/blog">Blog</NavLink>
+            <NavLink href="/projects">Projects</NavLink>
+            <NavLink href="/about">About</NavLink>
           </nav>
 
           <button
@@ -140,32 +136,14 @@ const breadcrumbs = [
         aria-label="Mobile navigation"
       >
         <div class="mx-auto max-w-3xl px-4 py-3 flex flex-col gap-1">
-          <a href="/blog"
-            class:list={[
-              "px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
-              currentPath.startsWith('/blog')
-                ? "text-foreground bg-foreground/5"
-                : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
-            ]}>Blog</a>
-          <a href="/projects"
-            class:list={[
-              "px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
-              currentPath.startsWith('/projects')
-                ? "text-foreground bg-foreground/5"
-                : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
-            ]}>Projects</a>
-          <a href="/about"
-            class:list={[
-              "px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
-              currentPath.startsWith('/about')
-                ? "text-foreground bg-foreground/5"
-                : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
-            ]}>About</a>
+          <NavLink href="/blog" mobile>Blog</NavLink>
+          <NavLink href="/projects" mobile>Projects</NavLink>
+          <NavLink href="/about" mobile>About</NavLink>
         </div>
       </nav>
   </header>
 
-  <div id="search-dialog" class="fixed inset-0 z-[60] hidden items-start justify-center bg-background/60 backdrop-blur-sm">
+  <div id="search-dialog" class="fixed inset-0 z-[60] hidden items-start justify-center bg-background/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Search articles">
     <div class="relative z-10 w-[640px] max-w-[calc(100vw-2rem)] pt-16">
       <div class="search-dialog__box relative bg-background border border-border rounded-lg shadow-lg">
         <div class="relative">
@@ -188,7 +166,7 @@ const breadcrumbs = [
         </div>
       </div>
 
-      <div id="search-results" class="search-dialog__box relative z-10 mt-2 overflow-y-hidden rounded-lg bg-background border border-border shadow-lg">
+      <div id="search-results" class="search-dialog__box relative z-10 mt-2 max-h-[60vh] overflow-y-auto rounded-lg bg-background border border-border shadow-lg">
         <div class="p-4 text-xs text-muted-foreground">
           Start typing to search posts.
         </div>
@@ -248,7 +226,7 @@ const breadcrumbs = [
           <nav class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-xs text-foreground/80" aria-label="Footer links">
             <a href="/categories/" class="inline-block duration-300 ease-in-out hover:text-foreground transition-colors">Categories</a>
             <span class="text-muted-foreground/40">&middot;</span>
-            <a href="/tags/" class="inline-block duration-300 ease-in-out hover:text-foreground transition-colors">Tags</a>
+            <a href="/blog/tags" class="inline-block duration-300 ease-in-out hover:text-foreground transition-colors">Tags</a>
           </nav>
         </div>
         <a href="mailto:awesomehet1@gmail.com" class="inline-block text-xs font-mono text-foreground/80 duration-300 ease-in-out hover:text-foreground transition-colors">Email</a>
@@ -273,22 +251,37 @@ const breadcrumbs = [
       const menu = document.getElementById('mobile-menu');
       const iconOpen = toggle?.querySelector('.mobile-menu-open');
       const iconClose = toggle?.querySelector('.mobile-menu-close');
+      if (!toggle || !menu) return;
 
-      toggle?.addEventListener('click', () => {
-        const isOpen = menu?.classList.contains('hidden') === false;
-        if (isOpen) {
-          menu.classList.add('hidden');
-          iconOpen?.classList.remove('hidden');
-          iconClose?.classList.add('hidden');
-          toggle.setAttribute('aria-expanded', 'false');
-          toggle.setAttribute('aria-label', 'Open menu');
-        } else {
-          menu?.classList.remove('hidden');
-          iconOpen?.classList.add('hidden');
-          iconClose?.classList.remove('hidden');
-          toggle.setAttribute('aria-expanded', 'true');
-          toggle.setAttribute('aria-label', 'Close menu');
-        }
+      function closeMenu() {
+        menu.classList.add('hidden');
+        iconOpen?.classList.remove('hidden');
+        iconClose?.classList.add('hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+      }
+
+      function openMenu() {
+        menu.classList.remove('hidden');
+        iconOpen?.classList.add('hidden');
+        iconClose?.classList.remove('hidden');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Close menu');
+      }
+
+      toggle.addEventListener('click', () => {
+        if (menu.classList.contains('hidden')) openMenu();
+        else closeMenu();
+      });
+
+      // Close when a nav link is followed.
+      menu.querySelectorAll('[data-nav-link]').forEach((link) => {
+        link.addEventListener('click', closeMenu);
+      });
+
+      // Close when the viewport grows to the desktop breakpoint.
+      window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+        if (e.matches) closeMenu();
       });
     });
   </script>
@@ -380,10 +373,18 @@ const breadcrumbs = [
         `;
       }
 
+      let lastFocused = null;
+
+      function isOpen() {
+        return dialog && !dialog.classList.contains('hidden');
+      }
+
       function openDialog() {
-        if (!dialog) return;
+        if (!dialog || isOpen()) return;
+        lastFocused = document.activeElement;
         dialog.classList.remove('hidden');
         dialog.classList.add('flex');
+        document.body.style.overflow = 'hidden';
         loadPosts().then(() => {
           render('');
           if (input) {
@@ -394,9 +395,13 @@ const breadcrumbs = [
       }
 
       function closeDialog() {
-        if (!dialog) return;
+        if (!dialog || !isOpen()) return;
         dialog.classList.add('hidden');
         dialog.classList.remove('flex');
+        document.body.style.overflow = '';
+        if (lastFocused && typeof lastFocused.focus === 'function') {
+          lastFocused.focus();
+        }
       }
 
       searchButton?.addEventListener('click', (e) => {
@@ -418,11 +423,33 @@ const breadcrumbs = [
         render(target && 'value' in target ? target.value : '');
       });
 
+      // Keep Tab focus inside the dialog while it is open.
+      dialog?.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab') return;
+        const focusable = dialog.querySelectorAll(
+          'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+        );
+        const visible = Array.prototype.filter.call(
+          focusable,
+          (el) => el.offsetParent !== null
+        );
+        if (!visible.length) return;
+        const first = visible[0];
+        const last = visible[visible.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      });
+
       document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
           e.preventDefault();
           openDialog();
-        } else if (e.key === 'Escape') {
+        } else if (e.key === 'Escape' && isOpen()) {
           closeDialog();
         }
       });

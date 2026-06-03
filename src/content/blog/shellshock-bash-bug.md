@@ -1,6 +1,6 @@
 ---
 title: "Shellshock: The Bash Bug That Shook the Internet 🐚"
-description: "Shellshock: The Bash Bug That Shook the Internet 🐚"
+description: "How CVE-2014-6271 (Shellshock) let attackers run arbitrary code through crafted Bash environment variables—with detection and exploitation notes."
 date: 2025-08-23
 tags: ["vulnerability", "bash", "CVE"]
 readTime: "5 min read"

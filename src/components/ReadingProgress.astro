@@ -1,0 +1,41 @@
+---
+// Scroll-driven reading-progress bar pinned to the top of the viewport.
+// Disabled entirely under prefers-reduced-motion.
+---
+
+<div
+  id="reading-progress"
+  class="fixed left-0 top-0 z-[70] h-0.5 w-0 bg-primary motion-reduce:hidden"
+  role="progressbar"
+  aria-label="Reading progress"
+  aria-hidden="true"
+></div>
+
+<script is:inline>
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const bar = document.getElementById('reading-progress');
+    if (!bar) return;
+    let ticking = false;
+
+    function update() {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const pct = max > 0 ? Math.min(100, (doc.scrollTop / max) * 100) : 0;
+      bar.style.width = pct + '%';
+      ticking = false;
+    }
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+    update();
+  })();
+</script>

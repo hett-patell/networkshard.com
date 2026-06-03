@@ -1,6 +1,6 @@
 ---
 title: "🕵️‍♂️ Google Dorks: The Power of Advanced Search Operators"
-description: "🕵️‍♂️ Google Dorks: The Power of Advanced Search Operators"
+description: "A practical guide to Google dorking operators—site, filetype, intitle, inurl—for finding exposed databases, sensitive files, and vulnerable systems."
 date: 2025-04-24
 tags: ["google-dorks", "recon", "osint"]
 readTime: "5 min read"

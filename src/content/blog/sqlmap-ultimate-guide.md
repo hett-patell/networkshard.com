@@ -1,6 +1,6 @@
 ---
 title: "SQLMap: The Ultimate Guide to Automated SQL Injection Testing 💉"
-description: "SQLMap: The Ultimate Guide to Automated SQL Injection Testing 💉"
+description: "A complete SQLMap walkthrough: setup, DB fingerprinting, data extraction, tamper scripts for WAF bypass, and responsible testing practices."
 date: 2025-04-30
 tags: ["sqlmap", "sql-injection", "tools"]
 readTime: "6 min read"
