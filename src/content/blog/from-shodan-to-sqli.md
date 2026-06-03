@@ -1,6 +1,6 @@
 ---
 title: "From Shodan to SQLi: Hacking an Exposed Company Dashboard"
-description: "From Shodan to SQLi: Hacking an Exposed Company Dashboard"
+description: "A real-world chain from a Shodan-exposed Apache server with directory listing to a SQL injection auth bypass on an internal company dashboard."
 date: 2025-08-28
 tags: ["sql-injection", "shodan", "pentesting"]
 readTime: "6 min read"

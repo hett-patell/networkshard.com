@@ -1,0 +1,35 @@
+---
+import Icon from './Icon.astro';
+import { SITE, SOCIAL } from '../lib/site';
+
+/**
+ * Vertical social link list used in the home "Let's connect" bento card.
+ * Data comes from src/lib/site.ts so URLs live in one place.
+ */
+const links = [
+  { href: SOCIAL.github, icon: 'github', label: 'GitHub', external: true },
+  { href: SOCIAL.linkedin, icon: 'linkedin', label: 'LinkedIn', external: true },
+  { href: SOCIAL.rss, icon: 'rss', label: 'RSS', external: false },
+  { href: SOCIAL.medium, icon: 'medium', label: 'Medium', external: true },
+  { href: SOCIAL.thm, icon: 'thm', label: 'TryHackMe', external: true },
+  { href: SOCIAL.email, icon: 'mail', label: SITE.email, external: false, small: true },
+];
+---
+
+<ul class="mt-auto flex flex-col gap-2 text-sm">
+  {links.map((l) => (
+    <li>
+      <a
+        href={l.href}
+        {...(l.external ? { target: '_blank', rel: 'noopener' } : {})}
+        class:list={[
+          'connect-item hover:text-primary transition-colors',
+          l.small && 'text-xs leading-tight break-words',
+        ]}
+      >
+        <Icon name={l.icon} class="connect-icon" />
+        {l.label}
+      </a>
+    </li>
+  ))}
+</ul>

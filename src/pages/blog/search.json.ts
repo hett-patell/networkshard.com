@@ -1,15 +1,15 @@
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../../lib/posts';
+import { computeReadTime } from '../../lib/readTime';
 
 export async function GET() {
-  const posts = (await getCollection('blog'))
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  const posts = await getPublishedPosts();
 
   const payload = posts.map((post) => ({
     slug: post.slug,
     title: post.data.title,
     description: post.data.description,
     date: post.data.date.toISOString(),
-    readTime: post.data.readTime ?? null,
+    readTime: computeReadTime(post.body, post.data.readTime),
   }));
 
   return new Response(JSON.stringify(payload), {

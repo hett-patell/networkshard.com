@@ -1,0 +1,22 @@
+---
+interface Props {
+  href: string;
+  /** mobile variant uses block padding + md:hidden container styling */
+  mobile?: boolean;
+}
+
+const { href, mobile = false } = Astro.props;
+const currentPath = Astro.url.pathname;
+const active = href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+
+const base = mobile
+  ? 'px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200'
+  : 'px-3 py-2 rounded-full transition-all duration-200';
+const state = active
+  ? 'text-foreground bg-foreground/5'
+  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5';
+---
+
+<a href={href} data-nav-link class:list={[base, state]} aria-current={active ? 'page' : undefined}>
+  <slot />
+</a>

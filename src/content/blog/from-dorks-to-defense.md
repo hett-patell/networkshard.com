@@ -1,6 +1,6 @@
 ---
 title: "From Dorks to Defense: How I Secured Two CERT-In Hall of Fames"
-description: "From Dorks to Defense: How I Secured Two CERT-In Hall of Fames"
+description: "How targeted Google dorking on government domains uncovered SQL injection and XSS bugs that earned two CERT-In Hall of Fame recognitions."
 date: 2025-11-25
 tags: ["bug-bounty", "CERT-IN", "recon"]
 readTime: "5 min read"

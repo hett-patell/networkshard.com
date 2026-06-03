@@ -1,6 +1,6 @@
 ---
 title: "Understanding Reverse DNS (rDNS) — A Behind-the-Scenes Lookup"
-description: "Understanding Reverse DNS (rDNS) — A Behind-the-Scenes Lookup"
+description: "How reverse DNS uses PTR records to map IPs back to hostnames, and why it matters for email authentication, forensics, and network diagnostics."
 date: 2025-04-14
 tags: ["dns", "networking", "recon"]
 readTime: "4 min read"

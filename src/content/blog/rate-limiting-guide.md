@@ -1,6 +1,6 @@
 ---
 title: "Rate Limiting: When Your Server Says Chill, Bro."
-description: "Rate Limiting: When Your Server Says Chill, Bro."
+description: "How rate limiting works—token bucket, leaky bucket, sliding window—and the bypass tricks (IP rotation, header tampering) attackers use against it."
 date: 2025-05-03
 tags: ["rate-limiting", "web-security"]
 readTime: "5 min read"

@@ -1,6 +1,6 @@
 ---
 title: "When Data Whispers Secrets: Understanding Sensitive Information Disclosure in Modern Systems 🔐"
-description: "When Data Whispers Secrets: Understanding Sensitive Information Disclosure in Modern Systems 🔐"
+description: "A tour of information-disclosure bugs—verbose errors, metadata leaks, IDOR, directory listing, hardcoded secrets—and how to prevent each one."
 date: 2025-04-17
 tags: ["information-disclosure", "web-security"]
 readTime: "5 min read"

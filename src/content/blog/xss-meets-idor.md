@@ -1,6 +1,6 @@
 ---
 title: "XSS Meets IDOR: A Double Vulnerability Story on a Learning Platform 🔥"
-description: "XSS Meets IDOR: A Double Vulnerability Story on a Learning Platform 🔥"
+description: "Chaining a stored HTML injection, an IDOR on predictable blog IDs, and stored XSS into full account takeover on a learning platform."
 date: 2025-06-19
 tags: ["xss", "idor", "bug-bounty"]
 readTime: "5 min read"

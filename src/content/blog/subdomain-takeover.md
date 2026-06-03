@@ -1,6 +1,6 @@
 ---
 title: "Subdomain Takeover: When Your Own Domain Becomes Your Enemy 🕵️‍♂️"
-description: "Subdomain Takeover: When Your Own Domain Becomes Your Enemy 🕵️‍♂️"
+description: "How dangling DNS records pointing to unclaimed services enable subdomain takeover—covering discovery, exploitation, detection, and mitigation."
 date: 2025-07-05
 tags: ["subdomain-takeover", "dns", "web-security"]
 readTime: "5 min read"

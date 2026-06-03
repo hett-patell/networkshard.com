@@ -1,55 +1,41 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../../../lib/posts';
+import { slugify } from '../../../lib/slugify';
+import PostList from '../../../components/PostList.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  const tags = new Set<string>();
-
+  const posts = await getPublishedPosts();
+  const slugs = new Set<string>();
   for (const post of posts) {
-    if (post.data.draft) continue;
-    for (const tag of post.data.tags || []) {
-      tags.add(tag);
-    }
+    for (const tag of post.data.tags || []) slugs.add(slugify(tag));
   }
-
-  return [...tags].map(tag => ({
-    params: { tag },
-    props: { tag },
-  }));
+  return [...slugs].map((tag) => ({ params: { tag } }));
 }
 
-const { tag } = Astro.props;
+const { tag } = Astro.params;
 
-const posts = (await getCollection('blog'))
-  .filter(p => !p.data.draft && p.data.tags?.includes(tag))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const allPosts = await getPublishedPosts();
+const posts = allPosts.filter((post) =>
+  (post.data.tags || []).some((t) => slugify(t) === tag)
+);
+
+// Display the original (raw) tag spelling that maps to this slug.
+const label =
+  posts.flatMap((p) => p.data.tags || []).find((t) => slugify(t) === tag) ||
+  (tag || 'tag').replace(/-/g, ' ');
 ---
 
-<BaseLayout title={`${tag} — Blog`} description={`Articles tagged "${tag}" — cybersecurity, penetration testing, and security research.`}>
+<BaseLayout title={`${label} — Blog`} description={`Articles tagged "${label}" — cybersecurity, penetration testing, and security research.`}>
   <section class="pb-10 md:pb-12">
     <header class="mb-6">
       <a href="/blog/tags" class="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">&larr; All tags</a>
       <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight mt-3 mb-2">
-        <span class="text-primary">#</span>{tag}
+        <span class="text-primary">#</span>{label}
       </h1>
       <p class="text-base text-muted-foreground">{posts.length} {posts.length === 1 ? 'article' : 'articles'}</p>
     </header>
 
-    <ul class="flex flex-col divide-y divide-border/20">
-      {posts.map(post => (
-        <li>
-          <a href={`/blog/${post.slug}`} class="blog-card-link block w-full py-3 -mx-4 px-4 transition-colors duration-300 rounded">
-            <h3 class="blog-card-title font-mono text-sm font-semibold leading-snug text-foreground/90 transition-colors duration-150">
-              {post.data.title}
-            </h3>
-            <div class="flex flex-wrap items-center gap-1.5 mt-1 text-[11px] font-mono text-muted-foreground">
-              <time>{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
-              {post.data.readTime && <><span>&middot;</span><span>{post.data.readTime}</span></>}
-            </div>
-          </a>
-        </li>
-      ))}
-    </ul>
+    <PostList posts={posts} variant="detailed" />
   </section>
 </BaseLayout>

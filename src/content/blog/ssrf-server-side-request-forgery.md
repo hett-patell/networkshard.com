@@ -1,6 +1,6 @@
 ---
 title: "SSRF: When Your Server Becomes a Nosy Hacker — Part 1"
-description: "SSRF: When Your Server Becomes a Nosy Hacker — Part 1"
+description: "Exploiting SSRF for internal recon and cloud-metadata access, with bypass techniques like IP encoding and DNS rebinding—and real-world impact."
 date: 2025-06-03
 tags: ["ssrf", "web-security"]
 readTime: "8 min read"

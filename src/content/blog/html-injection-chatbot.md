@@ -1,6 +1,6 @@
 ---
 title: "How We Discovered a Stored HTML Injection in a Chatbot System 🕷️"
-description: "How We Discovered a Stored HTML Injection in a Chatbot System 🕷️"
+description: "Finding a stored HTML injection in an AI chatbot that rendered unsanitized messages server-side, opening the door to defacement and phishing."
 date: 2025-06-06
 tags: ["html-injection", "chatbot", "web-security"]
 readTime: "4 min read"

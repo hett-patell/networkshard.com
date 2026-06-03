@@ -1,17 +1,42 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts } from '../../lib/posts';
+import { slugify } from '../../lib/slugify';
+import { computeReadTime } from '../../lib/readTime';
+import TableOfContents from '../../components/TableOfContents.astro';
+import ReadingProgress from '../../components/ReadingProgress.astro';
+import PostNav from '../../components/PostNav.astro';
+import RelatedPosts from '../../components/RelatedPosts.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map(post => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
+  const posts = await getPublishedPosts();
+  return posts.map((post, i) => {
+    // posts are sorted newest-first: "next" = newer, "prev" = older
+    const next = posts[i - 1] ?? null;
+    const prev = posts[i + 1] ?? null;
+
+    const tags = new Set(post.data.tags || []);
+    const related = posts
+      .filter((p) => p.slug !== post.slug)
+      .map((p) => ({
+        post: p,
+        shared: (p.data.tags || []).filter((t) => tags.has(t)).length,
+      }))
+      .filter((r) => r.shared > 0)
+      .sort((a, b) => b.shared - a.shared || b.post.data.date.valueOf() - a.post.data.date.valueOf())
+      .slice(0, 3)
+      .map((r) => r.post);
+
+    return {
+      params: { slug: post.slug },
+      props: { post, prev, next, related },
+    };
+  });
 }
 
-const { post } = Astro.props;
-const { Content } = await post.render();
+const { post, prev, next, related } = Astro.props;
+const { Content, headings } = await post.render();
+const readTime = computeReadTime(post.body, post.data.readTime);
 
 const ogImage = `${Astro.site}og/${post.slug}.png`;
 const postUrl = `${Astro.site}blog/${post.slug}/`;
@@ -43,7 +68,8 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} image={ogImage} jsonLd={jsonLd}>
+<BaseLayout title={post.data.title} description={post.data.description} image={ogImage} ogType="article" jsonLd={jsonLd}>
+  <ReadingProgress />
   <article>
     <nav class="mb-6" aria-label="breadcrumb">
       <a href="/blog" class="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">&larr; Back to blog</a>
@@ -55,16 +81,18 @@ const jsonLd = {
       </h1>
       <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-muted-foreground mb-4">
         <time>{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-        {post.data.readTime && <><span class="text-muted-foreground/50">&middot;</span><span>{post.data.readTime}</span></>}
+        <span class="text-muted-foreground/50">&middot;</span><span>{readTime}</span>
       </div>
       {post.data.tags && post.data.tags.length > 0 && (
         <div class="flex flex-wrap gap-2">
           {post.data.tags.map((tag: string) => (
-            <a href={`/blog/tags/${tag}`} class="inline-block text-xs font-mono font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">{tag}</a>
+            <a href={`/blog/tags/${slugify(tag)}`} class="inline-block text-xs font-mono font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">{tag}</a>
           ))}
         </div>
       )}
     </header>
+
+    <TableOfContents headings={headings} />
 
     <div class="prose max-w-none">
       <Content />
@@ -101,9 +129,12 @@ const jsonLd = {
       </button>
     </div>
 
+    <RelatedPosts posts={related} />
+    <PostNav prev={prev} next={next} />
+
     <section class="mt-8 pt-8 border-t border-border/40">
       <h2 class="text-lg font-semibold tracking-tight text-foreground mb-6">Comments</h2>
-      <div id="giscus-container">
+      <div id="giscus-container" class="min-h-[8rem]">
         <script
           src="https://giscus.app/client.js"
           data-repo="hett-patell/networkshard.com"

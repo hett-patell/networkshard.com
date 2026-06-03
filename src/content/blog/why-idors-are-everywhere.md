@@ -1,6 +1,6 @@
 ---
 title: "Why IDORs Are Everywhere — And How to Find Them — Part I"
-description: "Why IDORs Are Everywhere — And How to Find Them — Part I"
+description: "How predictable sequential IDs exposed thousands of customer invoices, plus a methodology for spotting horizontal, vertical, and blind IDORs."
 date: 2025-06-15
 tags: ["idor", "web-security", "bug-bounty"]
 readTime: "5 min read"

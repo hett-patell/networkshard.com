@@ -3,22 +3,8 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Geist';
-  src: url('/fonts/GeistVF.woff2') format('woff2');
-  font-weight: 100 900;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'Geist Mono';
   src: url('/fonts/GeistMonoVF.woff2') format('woff2');
-  font-weight: 100 900;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  src: url('/fonts/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-display: swap;
 }
@@ -38,8 +24,10 @@
     --header-background: #f4f5f5;
     --foreground: #151819;
     --primary: #63959c;
+    /* darker primary for body-text links — meets WCAG AA (≥4.5:1) on --background */
+    --primary-text: #3c6f76;
     --primary-foreground: #ffffff;
-    --primary-hover: var(--primary);
+    --primary-hover: var(--primary-text);
     --secondary: #eceeee;
     --secondary-foreground: #1c2021;
     --muted: #eceeee;
@@ -61,6 +49,8 @@
     --header-background: #0e0f11;
     --foreground: #eaebec;
     --primary: #85b1b7;
+    /* dark-theme primary already exceeds AA on --background, so reuse it */
+    --primary-text: #85b1b7;
     --primary-foreground: #131416;
     --primary-hover: var(--primary);
     --secondary: #1f2123;
@@ -79,8 +69,38 @@
     border-color: var(--border);
   }
 
-  html {
-    scroll-behavior: smooth;
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Keyboard focus ring for all interactive elements */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Skip-to-content link: off-screen until focused */
+  .skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: -3rem;
+    z-index: 100;
+    padding: 0.5rem 0.875rem;
+    border-radius: 6px;
+    background: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 0.8125rem;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+    transition: top 0.15s ease;
+  }
+
+  .skip-link:focus {
+    top: 0.75rem;
   }
 
   body {
@@ -157,7 +177,7 @@
 /* Neo Buttons */
 .btn-neo-primary {
   @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-bold rounded-md transition-all;
-  font-family: 'Montserrat', var(--font-sans);
+  font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
   background: var(--primary);
   color: var(--primary-foreground);
   border: 2px solid var(--primary);
@@ -173,7 +193,7 @@
 
 .btn-neo-outline {
   @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-bold rounded-md transition-all;
-  font-family: 'Montserrat', var(--font-sans);
+  font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
   background: var(--background);
   color: var(--foreground);
   border: 2px solid var(--foreground);
@@ -318,16 +338,33 @@
   flex-wrap: nowrap;
   gap: 0.5rem;
   width: max-content;
-  will-change: transform;
-  animation: skills-marquee 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skills-track {
+    will-change: transform;
+    animation: skills-marquee 30s linear infinite;
+  }
+
+  .skills-strip:hover .skills-track {
+    animation-play-state: paused;
+  }
+}
+
+/* Reduced motion: no marquee — show a static, wrapped list instead */
+@media (prefers-reduced-motion: reduce) {
+  .skills-strip {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .skills-track {
+    flex-wrap: wrap;
+    width: auto;
+  }
 }
 
 .skills-track::-webkit-scrollbar {
   display: none;
-}
-
-.skills-strip:hover .skills-track {
-  animation-play-state: paused;
 }
 
 @keyframes skills-marquee {
@@ -359,7 +396,7 @@
 .prose ul, .prose ol { @apply mb-4 pl-6; }
 .prose li { @apply mb-1; }
 .prose strong { @apply text-foreground font-semibold; }
-.prose a { @apply text-primary hover:underline; }
+.prose a { color: var(--primary-text); @apply hover:underline; }
 .prose blockquote {
   @apply border-l-2 border-primary pl-4 my-4 italic text-muted-foreground;
 }

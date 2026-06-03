@@ -1,0 +1,26 @@
+---
+import type { Post } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class="mt-10 pt-8 border-t border-border/40" aria-label="Related posts">
+    <h2 class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground mb-4">Related posts</h2>
+    <ul class="flex flex-col divide-y divide-border/20">
+      {posts.map((post) => (
+        <li>
+          <a href={`/blog/${post.slug}`} class="blog-card-link block w-full py-3 -mx-4 px-4 transition-colors duration-300 rounded">
+            <h3 class="blog-card-title font-mono text-sm font-semibold leading-snug text-foreground/90 transition-colors duration-150">
+              {post.data.title}
+            </h3>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

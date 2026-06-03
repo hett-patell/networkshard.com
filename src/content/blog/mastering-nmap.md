@@ -1,6 +1,6 @@
 ---
 title: "Mastering Nmap: The Ultimate Guide to Port Scanning"
-description: "Mastering Nmap: The Ultimate Guide to Port Scanning"
+description: "A complete Nmap guide: TCP/SYN/UDP and stealth scans, the NSE scripting engine, host discovery, firewall evasion, and enumeration strategy."
 date: 2025-06-23
 tags: ["nmap", "recon", "tools"]
 readTime: "8 min read"
