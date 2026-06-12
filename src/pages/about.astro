@@ -238,6 +238,45 @@ const skills = [
           View advisory on GitHub &rarr;
         </a>
       </div>
+
+      <div class="bento-card">
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <p class="text-lg font-bold text-foreground">API Authentication Bypasses 2FA</p>
+            <p class="text-sm text-muted-foreground mt-0.5">Froxlor Security Advisory</p>
+          </div>
+          <span class="shrink-0 inline-flex items-center rounded-md border border-border/60 bg-muted/60 px-2.5 py-1 text-xs font-mono font-semibold text-foreground">
+            8.1/10
+          </span>
+        </div>
+
+        <div class="mt-4 space-y-2">
+          <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Impact</p>
+          <p class="text-sm text-muted-foreground leading-relaxed">
+            Froxlor's API authentication (<span class="font-mono">FroxlorRPC::validateAuth</span>) does not enforce Two-Factor Authentication. When a user enables 2FA, the web UI correctly requires a TOTP code — but the API accepts requests authenticated with only an API key and secret, issuing no TOTP challenge. An attacker who obtains a leaked API key+secret for a 2FA-protected account has full access to all API operations without providing a second factor.
+          </p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
+            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">CVE ID</p>
+            <p class="mt-1 text-sm font-mono text-foreground">CVE-2026-52793</p>
+          </div>
+          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
+            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Score</p>
+            <p class="mt-1 text-sm font-mono text-foreground">8.1/10</p>
+          </div>
+        </div>
+
+        <a
+          href="https://github.com/froxlor/froxlor/security/advisories/GHSA-f9rx-7wf7-jr36"
+          target="_blank"
+          rel="noopener"
+          class="inline-block mt-4 text-xs font-mono text-primary-hover hover:text-primary transition-colors"
+        >
+          View advisory on GitHub &rarr;
+        </a>
+      </div>
     </div>
   </section>
 
