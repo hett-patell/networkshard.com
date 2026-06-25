@@ -1,0 +1,29 @@
+---
+import ShardProjectLayout from "../layouts/ShardProjectLayout.astro";
+import { getShardProject } from "../lib/shard-projects";
+
+const project = getShardProject("shardc2")!;
+---
+
+<ShardProjectLayout project={project}>
+  <!-- ShardC2-specific: campaign types -->
+  <section class="pb-10 md:pb-14">
+    <h2 class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-4">
+      Campaign Types
+    </h2>
+    <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+      {[
+        { name: "Recon", desc: "Network enumeration, port scanning, service discovery" },
+        { name: "Brute", desc: "Credential spraying with policy-aware rate limits" },
+        { name: "Exfil", desc: "Staged data exfiltration with encrypted channels" },
+        { name: "Persist", desc: "Persistence implants with scheduled callbacks" },
+        { name: "Custom", desc: "User-defined task chains with conditional logic" },
+      ].map((c) => (
+        <div class="bento-card p-4">
+          <div class="font-mono text-sm font-semibold text-foreground">{c.name}</div>
+          <p class="mt-1.5 text-xs text-muted-foreground leading-relaxed">{c.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</ShardProjectLayout>

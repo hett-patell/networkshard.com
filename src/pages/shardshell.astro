@@ -1,0 +1,30 @@
+---
+import ShardProjectLayout from "../layouts/ShardProjectLayout.astro";
+import { getShardProject } from "../lib/shard-projects";
+
+const project = getShardProject("shardshell")!;
+---
+
+<ShardProjectLayout project={project}>
+  <!-- ShardShell-specific: module overview -->
+  <section class="pb-10 md:pb-14">
+    <h2 class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-4">
+      Modules
+    </h2>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {[
+        { name: "File Manager", desc: "Browse, upload, download, edit, and delete files with hex viewer support" },
+        { name: "Terminal", desc: "Interactive command execution with output streaming and history" },
+        { name: "Recon", desc: "System info, network config, process list, installed software enumeration" },
+        { name: "DB Access", desc: "MySQL, SQLite, and MSSQL query interface with table browser" },
+        { name: "Priv-Esc", desc: "SUID scan, capabilities audit, token privileges, AlwaysInstallElevated check" },
+        { name: "Obfuscation", desc: "3-level Python build system with self-decrypting XOR loader for AV evasion" },
+      ].map((mod) => (
+        <div class="bento-card p-4">
+          <div class="font-mono text-sm font-semibold text-foreground">{mod.name}</div>
+          <p class="mt-1.5 text-xs text-muted-foreground leading-relaxed">{mod.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</ShardProjectLayout>

@@ -13,6 +13,7 @@ interface Props {
 }
 
 const { name, description, tech, github, href, pathPrefix } = Astro.props;
+const isExternal = href?.startsWith('http');
 ---
 
 <div class="bento-card">
@@ -20,7 +21,18 @@ const { name, description, tech, github, href, pathPrefix } = Astro.props;
     <span class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60">
       {pathPrefix}{slugify(name)}
     </span>
-    <h3 class="text-base font-semibold text-foreground mt-1">{name}</h3>
+    {href ? (
+      <a
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener" : undefined}
+        class="block mt-1 text-base font-semibold text-foreground hover:text-primary transition-colors"
+      >
+        {name}
+      </a>
+    ) : (
+      <h3 class="text-base font-semibold text-foreground mt-1">{name}</h3>
+    )}
   </div>
   <p class="text-sm text-muted-foreground leading-relaxed mb-3">{description}</p>
   <div class="flex flex-wrap items-center justify-between gap-3">
@@ -40,10 +52,12 @@ const { name, description, tech, github, href, pathPrefix } = Astro.props;
       {href && (
         <a
           href={href}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener" : undefined}
           class="text-[11px] font-mono text-primary-hover hover:text-primary transition-colors"
-          aria-label={`${name} live demo`}
+          aria-label={`${name} details`}
         >
-          live demo →
+          {isExternal ? "live demo →" : "details →"}
         </a>
       )}
       {github && (

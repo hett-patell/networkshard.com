@@ -1,0 +1,37 @@
+---
+import ShardProjectLayout from "../layouts/ShardProjectLayout.astro";
+import { getShardProject } from "../lib/shard-projects";
+
+const project = getShardProject("shardpet")!;
+---
+
+<ShardProjectLayout project={project}>
+  <!-- ShardPet-specific: sprite state machine -->
+  <section class="pb-10 md:pb-14">
+    <h2 class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-4">
+      Sprite State Machine
+    </h2>
+    <div class="bento-card p-5 md:p-6">
+      <div class="flex flex-wrap items-center justify-center gap-3 font-mono text-xs">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-muted text-foreground">
+          idle
+        </span>
+        <span class="text-muted-foreground">→</span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-primary/40 bg-primary/10 text-primary">
+          walk
+        </span>
+        <span class="text-muted-foreground">→</span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-muted text-foreground">
+          hop
+        </span>
+        <span class="text-muted-foreground">→</span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-muted text-foreground">
+          idle
+        </span>
+      </div>
+      <p class="mt-4 text-center text-xs text-muted-foreground">
+        GPU-only translate3d rendering · Shadow DOM isolated · 60 fps even on heavy pages
+      </p>
+    </div>
+  </section>
+</ShardProjectLayout>

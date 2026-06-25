@@ -1,0 +1,27 @@
+---
+import ShardProjectLayout from "../layouts/ShardProjectLayout.astro";
+import { getShardProject } from "../lib/shard-projects";
+
+const project = getShardProject("shardflow")!;
+---
+
+<ShardProjectLayout project={project}>
+  <!-- ShardFlow-specific: policy modes -->
+  <section class="pb-10 md:pb-14">
+    <h2 class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-4">
+      Policy Modes
+    </h2>
+    <div class="grid gap-3 sm:grid-cols-3">
+      {[
+        { name: "Drop", desc: "Complete network isolation via nftables rules — target loses all connectivity" },
+        { name: "Throttle", desc: "Bandwidth shaping via tc HTB + IFB — configurable rate limits per target" },
+        { name: "Pcap", desc: "Silent packet capture to .pcapng — passive monitoring with zero target disruption" },
+      ].map((mode) => (
+        <div class="bento-card p-4">
+          <div class="font-mono text-sm font-semibold text-primary">{mode.name}</div>
+          <p class="mt-1.5 text-xs text-muted-foreground leading-relaxed">{mode.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</ShardProjectLayout>

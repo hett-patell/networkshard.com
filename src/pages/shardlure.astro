@@ -1,0 +1,43 @@
+---
+import ShardProjectLayout from "../layouts/ShardProjectLayout.astro";
+import { getShardProject } from "../lib/shard-projects";
+
+const project = getShardProject("shardlure")!;
+---
+
+<ShardProjectLayout project={project}>
+  <!-- ShardLure-specific: enrichment pipeline visual -->
+  <section class="pb-10 md:pb-14">
+    <h2 class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 mb-4">
+      Enrichment Pipeline
+    </h2>
+    <div class="bento-card p-5 md:p-6">
+      <div class="flex flex-col gap-3 font-mono text-xs">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded border border-border bg-muted text-primary text-[10px] font-bold">1</span>
+          <span class="text-foreground/90">SSH session captured via Cowrie / journalctl</span>
+        </div>
+        <div class="ml-3.5 border-l border-border/60 h-3"></div>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded border border-border bg-muted text-primary text-[10px] font-bold">2</span>
+          <span class="text-foreground/90">HASSH fingerprint + username playbook extraction</span>
+        </div>
+        <div class="ml-3.5 border-l border-border/60 h-3"></div>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded border border-border bg-muted text-primary text-[10px] font-bold">3</span>
+          <span class="text-foreground/90">7-provider IP enrichment (AbuseIPDB, VT, GreyNoise, Shodan...)</span>
+        </div>
+        <div class="ml-3.5 border-l border-border/60 h-3"></div>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded border border-border bg-muted text-primary text-[10px] font-bold">4</span>
+          <span class="text-foreground/90">Actor clustering and intent classification</span>
+        </div>
+        <div class="ml-3.5 border-l border-border/60 h-3"></div>
+        <div class="flex items-center gap-3">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded border border-border bg-muted text-primary text-[10px] font-bold">5</span>
+          <span class="text-foreground/90">STIX 2.1 IOC export + globe dashboard</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</ShardProjectLayout>
