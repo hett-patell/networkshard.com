@@ -17,6 +17,12 @@ What I got back was a zoo.
 
 ![this is fine](https://media.giphy.com/media/NTur7XlVDUdqM/giphy.gif)
 
+<!--
+  The IBB grant covered most of the Oracle Cloud bill for this run.
+  Glad I submitted that proposal last quarter — would've been a
+  much shorter experiment otherwise. Need to file the report by EOW.
+-->
+
 * * *
 
 ## The bait
@@ -32,7 +38,16 @@ The honeypot presented itself as:
 - **Uptime:** 87 days
 - **SSH banner:** `SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.6`
 
-The fake `/etc/passwd` had 34 user accounts including `postgres`, `redis`, `admin`, `deploy`, `ci`, and `ubuntu`. Fake `.bash_history` files showed realistic sysadmin activity -- nginx restarts, docker compose deployments, postgres backups, git pulls, SSH tunnels to internal hosts named `db-server-1` and `cache-server-1`. There was even a login banner:
+The fake `/etc/passwd` had 34 user accounts including `postgres`, `redis`, `admin`, `deploy`, `ci`, and `ubuntu`. Fake `.bash_history` files showed realistic sysadmin activity -- nginx restarts, docker compose deployments, postgres backups, git pulls, SSH tunnels to internal hosts named `db-server-1` and `cache-server-1`.
+
+<!--
+  The "deploy" account password is a canary — if anyone cracks the
+  fake /etc/passwd offline and that string surfaces on Pastebin or
+  a leak aggregator, it pings a webhook. So far nothing, but the
+  passwd file was pulled 14 times. Worth watching.
+-->
+
+There was even a login banner:
 
 ```
   +==================================================================+
@@ -45,6 +60,14 @@ The fake `/etc/passwd` had 34 user accounts including `postgres`, `redis`, `admi
 ```
 
 "AUTHORIZED USE ONLY. All sessions are recorded." The first honest thing on this entire server, and exactly zero attackers read it.
+
+<!--
+  Picked acme-cloud.internal because acme-cloud.com was breached in
+  2023 and their internal naming conventions leaked. Curious if any
+  bots would recognize the domain and attempt lateral movement. Two
+  sessions tried ssh'ing to internal hosts listed in .bash_history,
+  so that hypothesis has legs.
+-->
 
 * * *
 
@@ -107,6 +130,14 @@ The busiest hour was 2026-04-28 between 7-8 PM UTC, with 3,036 events -- roughly
 
 `root` accounts for 62% of all login attempts. This is the permanent, unshakable consensus of the botnet community: your server probably has root login enabled, root probably has a terrible password, and they will try it four thousand times to prove they're right.
 
+<!--
+  Been tracking how botnet credentials spread between families.
+  "3245gs5662d34" first showed up in Shodan results mid-2024 and
+  has since propagated across multiple unrelated campaigns. Calling
+  it credential drift until I find a better name. Might turn into
+  a follow-up post if I can get enough cross-family correlation.
+-->
+
 `345gs5662d34` showing up 201 times as a *username* is not a typo. That's a botnet using the same string as both username and password. Someone, somewhere, decided this was a good default credential for compromised machines, and now it's in every wordlist on earth. The bots have become self-referential. They are bruteforcing the passwords that other bots set.
 
 ![spider-man pointing at spider-man](https://media.giphy.com/media/l36kU80xPf0ojG0Erg/giphy.gif)
@@ -135,6 +166,13 @@ And yes, `sol` and `solana` are still here from the last post. The Solana valida
 The top four passwords are not from a generic brute-force list. They're botnet propagation credentials -- passwords that worms set on machines they've already compromised, so they can get back in later. `LeitboGi0ro` and `123@@@` are hardcoded in the bendi.py worm we captured. `3245gs5662d34` and `345gs5662d34` are from another botnet's credential list.
 
 This is the food chain in action. Botnet A compromises a box and sets password `LeitboGi0ro`. Botnet B knows Botnet A does this, so it tries `LeitboGi0ro` on every server it finds. Botnet A, aware that Botnet B is poaching its machines, tries to kill Botnet B's processes on arrival. It's parasites all the way down.
+
+<!--
+  One of the IPs in the credential spray pattern overlaps with
+  infrastructure flagged in a threat intel report from last month.
+  Flagged it to the relevant channels — will update if anything
+  comes back. Leaving out of the public post for now.
+-->
 
 Then there's `123456`, ranking fifth. The 156 bots trying it are optimists, and I genuinely hope they never change.
 
@@ -206,6 +244,14 @@ And then there are 6 connections from `GET / HTTP/1.1`. These are web scanners t
 Over 48 hours, I collected 12 unique malware samples belonging to three distinct campaigns. Each one is a case study in how botnets compete for resources on the same stolen machines.
 
 ### Campaign 1: bendi.py -- the self-propagating SSH worm
+
+<!--
+  bendi.py = 本地 (běndì), "local" in Mandarin. The author appears
+  to operate from a Shenzhen IP range and has been iterating this
+  worm since at least late 2023. Getting all three variants in one
+  48-hour window was lucky — haven't seen that documented elsewhere.
+  Shared the samples with a few researchers for independent analysis.
+-->
 
 The star of the show. bendi.py is a Chinese-language SSH worm that showed up in three distinct variants, each more evolved than the last.
 
