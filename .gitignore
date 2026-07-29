@@ -12,6 +12,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# local agent state
+.crew/
 
 # environment variables
 .env
