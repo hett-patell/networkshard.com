@@ -2,8 +2,9 @@ import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
 import MarkdownIt from 'markdown-it';
 import sanitizeHtml from 'sanitize-html';
-import { getPublishedPosts } from '../lib/posts';
+import { getPostSlug, getPublishedPosts } from '../lib/posts';
 import { SITE } from '../lib/site';
+import { getCategoryLabel, type CategoryId } from '../lib/taxonomy';
 
 const md = new MarkdownIt({ html: true, linkify: true });
 
@@ -19,7 +20,7 @@ export async function GET(context: APIContext) {
     items: posts.map((post) => {
       // Render the raw markdown body to HTML, sanitize it, and resolve any
       // root-relative image/link URLs to absolute so feed readers can load them.
-      const html = sanitizeHtml(md.render(post.body), {
+      const html = sanitizeHtml(md.render(post.body ?? ''), {
         allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'figure', 'figcaption']),
         allowedAttributes: {
           ...sanitizeHtml.defaults.allowedAttributes,
@@ -40,8 +41,11 @@ export async function GET(context: APIContext) {
         title: post.data.title,
         description: post.data.description,
         pubDate: post.data.date,
-        link: `/blog/${post.slug}/`,
-        categories: post.data.tags,
+        link: `/blog/${getPostSlug(post)}/`,
+        categories: [
+          getCategoryLabel(post.data.category as CategoryId),
+          ...(post.data.tags ?? []),
+        ],
         content: html,
       };
     }),

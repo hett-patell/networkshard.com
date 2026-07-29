@@ -1,57 +1,39 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedPosts } from '../../lib/posts';
-import { slugify } from '../../lib/slugify';
+import { CATEGORIES } from '../../lib/taxonomy';
 
 const posts = await getPublishedPosts();
-
-const categoryMap = new Map<string, { name: string; count: number }>();
-
-for (const post of posts) {
-  const fallbackCategory = post.data.tags?.[0];
-  const categoryName = post.data.category || fallbackCategory || 'General';
-  const slug = slugify(categoryName);
-  const current = categoryMap.get(slug);
-  if (current) {
-    current.count += 1;
-  } else {
-    categoryMap.set(slug, { name: categoryName, count: 1 });
-  }
-}
-
-const categories = [...categoryMap.entries()]
-  .map(([slug, value]) => ({ slug, ...value }))
-  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+const categories = CATEGORIES.map((category) => ({
+  ...category,
+  count: posts.filter((post) => post.data.category === category.id).length,
+})).filter((category) => category.count > 0);
 ---
 
-<BaseLayout title="Categories" description="Browse posts by category.">
-  <section class="pb-8 md:pb-12">
-    <header class="mb-6">
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight">Categories</h1>
-      <p class="mt-2 text-sm font-mono text-muted-foreground uppercase tracking-wider">{categories.length} Categories</p>
+	<BaseLayout title="Categories" description="Browse posts by category." image={`${Astro.site}og/categories.png`}>
+  <section class="pb-12">
+    <header class="border-b border-border pb-8 md:pb-10">
+      <p class="mb-3 text-xs uppercase tracking-[0.18em] text-primary">/categories</p>
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h1 class="text-4xl font-bold tracking-[-0.05em] text-foreground md:text-6xl">Archive index</h1>
+          <p class="mt-3 text-sm text-muted-foreground">Posts filed by their primary category.</p>
+        </div>
+        <span class="text-xs text-muted-foreground">{categories.length} categories</span>
+      </div>
     </header>
 
-    <ul class="projects-table" role="list">
-      {categories.map((category) => (
+    <ol class="border-b border-border" role="list">
+      {categories.map((category, index) => (
         <li>
-          <a href={`/categories/${category.slug}/`} class="projects-row">
-            <div class="projects-row__title">
-              <span class="projects-row__path">/categories/{category.slug}</span>
-              <h2 class="projects-row__headline text-lg font-semibold leading-snug text-foreground/90">{category.name}</h2>
-            </div>
-            <p class="projects-row__desc text-sm leading-relaxed text-muted-foreground">
-              Browse all posts filed under {category.name}.
-            </p>
-            <div class="projects-row__meta">
-              <span class="projects-row__label">Posts</span>
-              <div class="projects-row__tags">
-                <span class="projects-row__tag">{category.count}</span>
-              </div>
-            </div>
+          <a href={category.href} class="group grid gap-3 border-t border-border py-5 sm:grid-cols-[2.5rem_13rem_1fr_auto] sm:items-center">
+            <span class="text-[11px] text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
+            <h2 class="font-semibold text-foreground transition-colors group-hover:text-primary">{category.label}</h2>
+            <p class="text-sm leading-6 text-muted-foreground">{category.description}</p>
+            <span class="text-xs text-muted-foreground">{category.count} {category.count === 1 ? 'post' : 'posts'} →</span>
           </a>
         </li>
       ))}
-    </ul>
+    </ol>
   </section>
 </BaseLayout>
-

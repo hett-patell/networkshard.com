@@ -2,7 +2,7 @@
 title: "I Built a Honeypot Framework, Deployed It for 5 Days, and the Internet Showed Up With Malware and Opinions"
 description: "119,001 events. 1,120 unique IPs. 16 malware samples. 822 terminal recordings. The same Chinese worm. The same cryptominer. A 29MB botnet propagation binary. And a tool I wrote to make sense of all of it."
 date: 2026-05-26
-category: "operations"
+category: "threat-intel"
 tags: ["ssh", "honeypot", "cowrie", "shardlure", "malware", "botnet", "oracle-cloud", "telemetry", "golang"]
 readTime: "22 min read"
 ---

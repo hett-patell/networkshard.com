@@ -3,39 +3,18 @@ import sharp from 'sharp';
 import fs from 'node:fs';
 import path from 'node:path';
 
-/**
- * Shared Open Graph image renderer (1200x630 PNG) using the site's
- * Geist Mono brand card. Used by the per-post OG route and the static
- * page OG routes (home/about/projects/blog).
- */
-
 let cachedFonts: { data: ArrayBuffer; bold: ArrayBuffer } | null = null;
 
 async function loadFonts() {
   if (cachedFonts) return cachedFonts;
 
-  const fontPath = path.resolve(
-    'node_modules/@fontsource/geist-mono/files/geist-mono-latin-400-normal.woff'
-  );
-  const fontBoldPath = path.resolve(
-    'node_modules/@fontsource/geist-mono/files/geist-mono-latin-700-normal.woff'
-  );
+  const fontPath = path.resolve('node_modules/@fontsource/geist-mono/files/geist-mono-latin-400-normal.woff');
+  const fontBoldPath = path.resolve('node_modules/@fontsource/geist-mono/files/geist-mono-latin-700-normal.woff');
 
-  let data: ArrayBuffer;
-  let bold: ArrayBuffer;
-  try {
-    data = fs.readFileSync(fontPath).buffer as ArrayBuffer;
-    bold = fs.readFileSync(fontBoldPath).buffer as ArrayBuffer;
-  } catch {
-    const r = await fetch(
-      'https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-400-normal.woff'
-    );
-    data = await r.arrayBuffer();
-    const rb = await fetch(
-      'https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-700-normal.woff'
-    );
-    bold = await rb.arrayBuffer();
-  }
+	const regularFile = fs.readFileSync(fontPath);
+	const boldFile = fs.readFileSync(fontBoldPath);
+	const data = regularFile.buffer.slice(regularFile.byteOffset, regularFile.byteOffset + regularFile.byteLength) as ArrayBuffer;
+	const bold = boldFile.buffer.slice(boldFile.byteOffset, boldFile.byteOffset + boldFile.byteLength) as ArrayBuffer;
 
   cachedFonts = { data, bold };
   return cachedFonts;
@@ -43,17 +22,14 @@ async function loadFonts() {
 
 export interface OgOptions {
   title: string;
-  /** small footer-right line (e.g. a formatted date) */
   meta?: string;
-  /** up to 3 tag chips along the bottom-left */
   tags?: string[];
 }
 
-export async function renderOgPng({ title, meta, tags = [] }: OgOptions): Promise<Buffer> {
-  const fonts = await loadFonts();
-  const displayTags = tags.slice(0, 3);
+async function renderSvg({ title, meta, tags, fonts }: OgOptions & { fonts: { data: ArrayBuffer; bold: ArrayBuffer } }): Promise<string> {
+  const indexLine = (tags ?? []).slice(0, 4).join('  /  ');
 
-  const svg = await satori(
+  return satori(
     {
       type: 'div',
       props: {
@@ -63,39 +39,47 @@ export async function renderOgPng({ title, meta, tags = [] }: OgOptions): Promis
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '60px',
+          padding: '58px 64px',
           fontFamily: 'Geist Mono',
-          background: '#131416',
-          color: '#eaebec',
+          background: '#fffcf0',
+          color: '#100f0f',
         },
         children: [
           {
             type: 'div',
             props: {
-              style: { display: 'flex', flexDirection: 'column', gap: '24px' },
+              style: { display: 'flex', flexDirection: 'column' },
               children: [
                 {
                   type: 'div',
                   props: {
                     style: {
-                      fontSize: '18px',
-                      color: '#85b1b7',
-                      letterSpacing: '0.1em',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      paddingBottom: '20px',
+                      borderBottom: '2px solid #100f0f',
+                      fontSize: '16px',
+                      letterSpacing: '0.12em',
                       textTransform: 'uppercase' as const,
                     },
-                    children: 'networkshard',
+                    children: [
+                      { type: 'div', props: { children: 'networkshard' } },
+                      { type: 'div', props: { style: { color: '#6f6e69' }, children: `NS / ${new Date().getFullYear()}` } },
+                    ],
                   },
                 },
                 {
                   type: 'div',
                   props: {
                     style: {
-                      fontSize: title.length > 60 ? '36px' : '44px',
+                      display: 'flex',
+                      paddingTop: '54px',
+                      maxWidth: '1040px',
+                      fontSize: title.length > 64 ? '42px' : '52px',
                       fontWeight: 700,
-                      lineHeight: 1.2,
-                      letterSpacing: '-0.02em',
-                      color: '#eaebec',
-                      maxWidth: '90%',
+                      lineHeight: 1.14,
+                      letterSpacing: '-0.045em',
                     },
                     children: title,
                   },
@@ -108,55 +92,30 @@ export async function renderOgPng({ title, meta, tags = [] }: OgOptions): Promis
             props: {
               style: {
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-end',
+                flexDirection: 'column',
+                borderTop: '1px solid #dad8ce',
               },
               children: [
                 {
                   type: 'div',
                   props: {
-                    style: { display: 'flex', gap: '10px' },
-                    children: displayTags.map((tag: string) => ({
-                      type: 'div',
-                      props: {
-                        style: {
-                          fontSize: '14px',
-                          padding: '4px 12px',
-                          borderRadius: '4px',
-                          background: '#1f2123',
-                          color: '#94999e',
-                          border: '1px solid #292b2e',
-                        },
-                        children: tag,
-                      },
-                    })),
+                    style: {
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      paddingTop: '18px',
+                      fontSize: '15px',
+                      color: '#6f6e69',
+                    },
+                    children: [
+                      { type: 'div', props: { children: indexLine || 'SECURITY  /  RESEARCH  /  SYSTEMS' } },
+                      { type: 'div', props: { children: meta || 'Het Patel' } },
+                    ],
                   },
                 },
                 {
                   type: 'div',
                   props: {
-                    style: {
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-end',
-                      gap: '4px',
-                    },
-                    children: [
-                      {
-                        type: 'div',
-                        props: {
-                          style: { fontSize: '14px', color: '#94999e' },
-                          children: meta || '',
-                        },
-                      },
-                      {
-                        type: 'div',
-                        props: {
-                          style: { fontSize: '14px', color: '#6f787b' },
-                          children: 'Het Patel',
-                        },
-                      },
-                    ],
+                    style: { display: 'flex', marginTop: '14px', width: '88px', height: '4px', background: '#315f58' },
                   },
                 },
               ],
@@ -174,6 +133,40 @@ export async function renderOgPng({ title, meta, tags = [] }: OgOptions): Promis
       ],
     }
   );
+}
 
-  return sharp(Buffer.from(svg)).png().toBuffer();
+function fallbackPng(label: string): Promise<Buffer> {
+  return sharp({
+    create: {
+      width: 1200,
+      height: 630,
+      channels: 4,
+      background: { r: 255, g: 252, b: 240, alpha: 1 },
+    },
+  })
+    .composite([
+      {
+        input: Buffer.from(
+          `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+            <text x="64" y="340" font-family="monospace" font-size="32" fill="#6f6e69">networkshard</text>
+            <text x="64" y="400" font-family="monospace" font-size="24" fill="#100f0f">${label}</text>
+          </svg>`
+        ),
+        top: 0,
+        left: 0,
+      },
+    ])
+    .png()
+    .toBuffer();
+}
+
+export async function renderOgPng({ title, meta, tags = [] }: OgOptions): Promise<Buffer> {
+  try {
+    const fonts = await loadFonts();
+    const svg = await renderSvg({ title, meta, tags, fonts });
+    return sharp(Buffer.from(svg)).png().toBuffer();
+  } catch (err) {
+    console.error('OG image rendering failed, using fallback:', err instanceof Error ? err.message : err);
+    return fallbackPng(title || 'networkshard');
+  }
 }

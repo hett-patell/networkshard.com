@@ -1,177 +1,203 @@
 ---
-title: "Subdomain Takeover: When Your Own Domain Becomes Your Enemy 🕵️‍♂️"
-description: "How dangling DNS records pointing to unclaimed services enable subdomain takeover—covering discovery, exploitation, detection, and mitigation."
+title: "I Thought I Found a Subdomain Takeover. I Had Not."
+description: "A false-positive investigation showing why suspicious DNS and verification records did not establish a claimable third-party resource."
 date: 2025-07-05
+category: "research"
 tags: ["subdomain-takeover", "dns", "web-security"]
-readTime: "5 min read"
+readTime: "7 min read"
 ---
 
-![](https://cdn-images-1.medium.com/max/800/0*uJ11VeDQmFtR_giW)
+A company was reportedly taking services offline. Kaif Shah and I asked the obvious security question: had any forgotten subdomain been left pointing at abandoned infrastructure?
 
-_A comprehensive guide to understanding, detecting, and preventing one of the web’s most overlooked vulnerabilities — Subdomain Takeover_ 🚨
+Within minutes, an automated scanner labelled one host as a possible Amazon S3 takeover. For a moment, the story seemed to write itself.
 
-![](https://cdn-images-1.medium.com/max/800/0*VhgnoW0aZuFlcBCK.gif)
+Then DNS ruined the story—in the useful way. The expected delegation was not there, the TXT response did not mean what we first thought it meant, and we could not establish an externally claimable resource. This was a false positive.
 
-* * *
+The original target and timestamps are redacted. No current lookup or provider claim was performed for this rewrite, and the historical authorization and reporting records are not retained. The commands below preserve the workflow with an inert domain; no target screenshot is included because the available captures expose unredacted operational details.
 
-## When LinkedIn News Became our Goldmine 🚨
+## Enumeration before takeover scanning
 
-Picture this: It’s just another random day when I’m scrolling through LinkedIn and stumble upon a post about a company’s financial troubles — half of their online services were reportedly going offline due to unpaid dues. While most people felt sympathy for the employees, my “evil mind” (as I like to call it) immediately saw an opportunity.
+We started by enumerating subdomains, then probing the resulting hosts for HTTP state and DNS context:
 
-_“If their services are shutting down, what happens to their subdomains?”_
+```bash
+sudo subfinder -d target.example -o subfinder.txt
 
-![](https://cdn-images-1.medium.com/max/800/0*0Xt4JDzPqrggz6kF.gif)
-
-That single thought led me and my friend — Kaif down a rabbit hole that perfectly demonstrates how business disruptions create cybersecurity vulnerabilities. Within minutes, we were running subdomain enumeration:
-
-```
-sudo subfinder -d target.com -o subfinder.txt && \sudo httpx-toolkit -l subfinder.txt -o httpx.txt -cname -ip -title -sc && \subjack -w subfinder.txt -t 100 -timeout 30 -ssl -c ~/Downloads/fingerprints.json -v
-```
-
-**The result?** We found `gcdn.target.com` flagged as potentially vulnerable to S3 bucket takeover.
-
-![](https://cdn-images-1.medium.com/max/800/1*stBzv0SOC1jbQJFOrxpHqQ.png)
-
-A quick dig command revealed the smoking gun:
-
-![](https://cdn-images-1.medium.com/max/800/1*076ZcP-S1SucdfUyhwY1-w.png)
-
-Though we were not able to take over the subdomain this time, the presence of proper **TXT records** and correct configurations helped the domain owner secure it just in time.
-
-![](https://cdn-images-1.medium.com/max/800/0*TRv-F-mS4ciJIQs0.gif)
-
-We felt a little disappointed — but in a good way! After all, the ultimate goal is always **security first**, not exploitation.
-
-* * *
-
-## What Exactly is a Subdomain Takeover? 🔍
-
-A subdomain takeover occurs when an attacker gains control of a subdomain by claiming an external service that the subdomain was pointing to, but which has been abandoned or misconfigured.
-
-A **subdomain takeover** occurs when a subdomain (like `support.example.com`) points to an external service (e.g., GitHub Pages, AWS S3, Heroku) that has been deleted or is unclaimed.
-
-Because the DNS record still exists but the service behind it does not, an attacker can claim the service and take control of the subdomain.
-
-![](https://cdn-images-1.medium.com/max/800/0*7Dav-AwmOAqY7mag.gif)
-
-> In simpler words: your company “forgot” to turn off a signpost pointing to an empty lot — and a hacker decided to build a trap there.
-
-* * *
-
-## How Subdomain Takeovers Actually Take Place: A Step-by-Step Breakdown 🔧
-
-Understanding the mechanics behind subdomain takeovers is crucial for both attackers and defenders. Let’s walk through the exact process of how these vulnerabilities unfold in the real world.
-
-## The Setup Phase: Creating the Vulnerability 🏗️
-
-**Step 1 — Legitimate Service Setup:** A company sets up a subdomain pointing to an external service:
-
-```
-# Company creates DNS recordblog.company.com -> CNAME -> company.github.io
+sudo httpx-toolkit \
+  -l subfinder.txt \
+  -o httpx.txt \
+  -cname \
+  -ip \
+  -title \
+  -sc
 ```
 
-**Step 2 — Service Configuration:** The company configures their GitHub Pages, AWS S3 bucket, or other service:
+`subfinder` supplied candidates. `httpx-toolkit` added status codes, titles, IPs, and CNAME values where available. None of those fields established takeover; they helped prioritize which host deserved manual DNS review.
 
-```
-# GitHub Pages setupRepository: company/company.github.ioCustom domain: blog.company.com
-```
+The historical scanner invocation was:
 
-**Step 3: The Critical Mistake** Time passes, and the company either:
-
--   Deletes the GitHub repository
--   Cancels the AWS S3 bucket
--   Removes the Heroku app
--   Stops paying for the service
-
-**But here’s the problem**: They forget to remove the DNS record!
-
-## The Attack Phase: Exploiting the Dangling DNS 🎯
-
-**Step 1: Discovery**
-
-An attacker discovers the vulnerable subdomain through various tools described below in the blog. (Sub-finder, crt.sh, AssetFinder, etc)
-
-**Step 2: Verification**
-
-The attacker verifies the service is unclaimed:
-
-```
-# Check if GitHub Pages existscurl -I https://company.github.io# Returns: 404 Not Found# Check DNS still points to servicedig CNAME blog.company.comnslookup blog.company.com# Still returns company.github.io
+```bash
+subjack \
+  -w subfinder.txt \
+  -t 100 \
+  -timeout 30 \
+  -ssl \
+  -c ~/Downloads/fingerprints.json \
+  -v
 ```
 
-**Step 3: Service Claiming** Now comes the actual takeover:
+The important flag was `-c`: it selected the fingerprint database used to classify provider error responses. The scanner associated one redacted host with an S3 bucket fingerprint. That was an automated label based on a response pattern, not proof of a CNAME, a deleted bucket, or the ability to claim anything.
 
-**For GitHub Pages:**
+![Automated scanner output flagging a host as a possible S3 bucket takeover candidate](/images/blog/subdomain-takeover/1_stBzv0SOC1jbQJFOrxpHqQ.png)
 
-```
-# Attacker creates repositorygit clone https://github.com/attacker/company.github.ioecho "<h1>Subdomain Taken Over!</h1>" > index.htmlgit add . && git commit -m "Takeover" && git push# Configure custom domain in GitHub Pages settings# Add blog.company.com as custom domain
-```
+*Scanner output associating a host with an S3 bucket takeover fingerprint. The tool labelled one host as `[S3 BUCKET]` based on a response pattern — a prioritization lead, not proof of DNS delegation, provider ownership, a missing resource, external claimability, or takeover.*
 
-**For AWS S3:**
+The high thread count made the first pass fast, but it did not make the conclusion reliable. A stale fingerprint, generic error page, transient response, or virtual-host mismatch can all produce a candidate worth checking and nothing more.
 
-```
-# Create bucket with exact nameaws s3 mb s3://company-bucket-name# Upload malicious contentecho "<h1>Subdomain Compromised</h1>" > index.htmlaws s3 cp index.html s3://company-bucket-name/aws s3 website s3://company-bucket-name --index-document index.html
-```
+## What the scanner hypothesis required
 
-**For Heroku:**
+For the S3 label to become a takeover finding, several links had to hold:
 
-```
-# Create new Heroku app with same nameheroku create company-app-name# Deploy malicious contentgit init && git add . && git commit -m "Takeover"heroku git:remote -a company-app-namegit push heroku master
-```
-
-## Why is it Dangerous? ⚔️
-
-![](https://cdn-images-1.medium.com/max/800/0*P_iOkqCfEAeLKdCw.gif)
-
--   🟢 Phishing attacks using a trusted domain.
--   🟢 Brand and reputation damage.
--   🟢 Malware or malicious scripts hosting.
--   🟢 Hard to detect and monitor.
-
-## How Does It Happen? 🧩
-
-![](https://cdn-images-1.medium.com/max/800/0*YZggjAbJAAt25lIz.gif)
-
-1.  Subdomain points to external service (GitHub Pages, AWS, etc.).
-2.  Service resource gets deleted or is unclaimed.
-3.  DNS record remains active.
-4.  Attacker claims the resource.
-5.  Attacker now controls the subdomain.
-
-## Tools & Automation 🧰
-
-![](https://cdn-images-1.medium.com/max/800/0*57YtOa9ZL1S_f4IX.gif)
-
--   Subjack
--   Subzy (Not much efficient)
--   Nuclei (subdomain takeover templates)
--   Subfinder + custom checks
-
-* * *
-
-## Our Approach
-
-Sometimes the best vulnerabilities aren’t found through traditional scanning — they’re discovered through intelligence gathering. Here’s the workflow that led to the discovery:
-
-```
-# Step 1: Comprehensive subdomain enumerationsudo subfinder -d target.com -o subfinder.txt# Step 2: HTTP probing with detailed informationsudo httpx-toolkit -l subfinder.txt -o httpx.txt -cname -ip -title -sc# Step 3: Subdomain takeover detectionsubjack -w subfinder.txt -t 100 -timeout 30 -ssl -c ~/Downloads/fingerprints.json -v# Step 4: DNS investigation for suspicious resultsdig CNAME suspicious-subdomain.target.com# Step 5: Manual verificationcurl -I suspicious-subdomain.target.com
+```text
+TARGET HOSTNAME
+    |
+    +--> DNS routes to a specific S3 website/service endpoint
+             |
+             +--> the expected bucket or domain binding is absent
+                      |
+                      +--> another authorized account can claim it
+                               |
+                               +--> the provider will serve that account's
+                                    content for the target hostname
 ```
 
-**The Reality of Subdomain Takeover Hunting:**
+The scanner only suggested the provider-fingerprint link. We still needed DNS delegation, missing-resource behavior, and provider-specific claimability.
 
+## Manual CNAME and TXT checks
+
+I queried the suspicious name directly and requested concise output first:
+
+```bash
+# Sanitized reconstruction
+host='assets.target.example'
+
+dig +noall +answer CNAME "$host"
+dig +noall +answer TXT "$host"
 ```
-# What the tools showed us$ subjack -w subfinder.txt -t 100 -timeout 30 -ssl -c ~/Downloads/fingerprints.json -v[S3 BUCKET] gcdn.target.com  # Flagged as vulnerable# What manual verification revealed$ dig CNAME gcdn.target.com;; No CNAME record found - looks promising!# The reality check$ dig TXT gcdn.target.com;; TXT records preventing takeover found
+
+The retained result state was:
+
+```dns
+; Sanitized reconstruction
+; CNAME answer: empty
+
+assets.target.example. 300 IN TXT "[redacted verification value]"
 ```
 
-**The Harsh Truth**: Automated tools can give false positives. Manual verification is essential, and even then, defensive measures might block your attempts.
+I then captured full answers for the surrounding record types instead of treating an empty CNAME answer as the finish line:
 
-* * *
+```bash
+# Sanitized reconstruction
+for type in A AAAA CNAME NS TXT; do
+  dig "$type" "$host"
+done
+```
 
-## About the Authors:
+The historical notes preserve no CNAME answer and at least one TXT value. They do not preserve complete A/AAAA answers, TTL history, resolver identity, or provider-side configuration. So the narrow conclusion is that the manual check did not reveal the CNAME chain expected by the S3 hypothesis—not that every possible routing mechanism was absent.
 
-![](https://cdn-images-1.medium.com/max/800/0*JDwQUaIQrRpXOuY-.gif)
+![Manual dig output showing no CNAME answer and a TXT record for the investigated hostname](/images/blog/subdomain-takeover/1_076ZcP-S1SucdfUyhwY1-w.png)
 
--   [**Het Patel**](https://www.linkedin.com/in/hetpatel9) — VAPT Intern| Cybersecurity Researcher | Bug Hunter | Top 6% THM | Coffee Addict ☕
--   [**Kaif Shah**](https://www.linkedin.com/in/skaif009/) — Security Researcher | CEHv11 | CRTA | Top 4% THM | Bug Hunter
+*Manual DNS lookup retained from the investigation. The CNAME answer was empty and at least one TXT value was present. This showed active-looking configuration at the hostname — but TXT data does not route HTTP traffic, identify an S3 bucket, prove a resource exists, or universally stop another account from binding a domain.*
 
-_Happy Hacking! (Ethically, of course)_ 😉🔒
+## My TXT-record wrong turn
+
+At the time, we described the TXT record as a defensive control that “prevented takeover.” That was too confident.
+
+A TXT value is data attached to a DNS name. It may be used for domain verification, email policy, certificate validation, or something unrelated. Its presence does not route HTTP traffic, identify an S3 bucket, prove a resource exists, or universally stop another account from binding a domain.
+
+The TXT answer was still relevant because it showed active-looking configuration at the hostname. But only the exact provider product and its current ownership rules could tell us whether that value participated in custom-domain verification. We did not have that evidence.
+
+## Why “no CNAME” weakened rather than proved the case
+
+A classic dangling-service pattern looks like this:
+
+```dns
+assets.target.example. 300 IN CNAME abandoned-bucket.s3-website-region.amazonaws.com.
+```
+
+That answer would establish routing to a provider endpoint. It still would not prove that the backing bucket was missing or claimable.
+
+Our lookup did not return that chain. This removed the simplest explanation for the scanner's S3 label. It did not prove safety: an A/AAAA record, CDN mapping, DNS-provider alias, historical record, or provider-side custom-domain mapping might require separate review. None was retained here, so inventing one would merely replace the scanner's unsupported assumption with mine.
+
+## Dangling DNS is not the same as claimability
+
+I now separate six questions:
+
+1. **Delegation:** Does DNS or HTTP routing reproducibly reach a specific third-party product?
+2. **Resource state:** Does provider-specific evidence show the expected resource or binding is missing?
+3. **Fingerprint quality:** Is the error response unique enough to that missing-resource state?
+4. **External claimability:** Could a different authorized account create the exact resource or bind the hostname?
+5. **Ownership controls:** Does the provider require DNS, file, account, or certificate validation unavailable to that account?
+6. **Minimal proof:** If explicitly permitted, can harmless content be served through the target hostname and removed safely?
+
+A scanner can help with question three. `dig` can help with question one and reveal ownership-control clues for question five. Neither answers the whole chain.
+
+We never attempted to create a bucket, bind the hostname, alter DNS, upload content, or serve a proof page. Provider-side claiming changes state and can create cost, collision, and ownership problems; it requires explicit authorization and a cleanup plan. Because delegation was already unproven, there was no technical reason to approach that boundary.
+
+## The decision tree I use now
+
+```text
+Scanner flags a hostname
+|
++-- Save timestamped DNS and HTTP evidence
+|
++-- Is there a repeatable route to one third-party product?
+|   |
+|   +-- No --> classify as scanner mismatch / false positive; stop
+|   |
+|   +-- Yes --> identify the exact product and resource-name rule
+|
++-- Does product-specific evidence show a missing binding?
+|   |
+|   +-- No --> not dangling; document and stop
+|   |
+|   +-- Unclear --> report a potential stale mapping without claiming takeover
+|   |
+|   +-- Yes --> assess ownership verification and namespace rules
+|
++-- Can external claimability be established without creating a resource?
+|   |
+|   +-- No or unclear --> do not claim; give owner the evidence
+|   |
+|   +-- Yes --> check explicit authorization for state-changing validation
+|
++-- Is a harmless provider-side proof specifically authorized?
+    |
+    +-- No --> stop and report the suspected condition
+    |
+    +-- Yes --> use the minimum proof, capture it, remove it, and retest
+```
+
+Our case exited at the first decision: no reproducible provider route was established from the retained DNS evidence. The correct label was **false positive**, not “protected takeover” and not “almost compromised.”
+
+## Reporting the result without overselling it
+
+A useful report could say:
+
+> An automated fingerprint associated the redacted hostname with an Amazon S3 takeover pattern. Manual DNS inspection did not return the expected CNAME delegation and did return a TXT value of unresolved purpose. I could not establish routing to S3, a missing resource, or external claimability. Please review current and historical DNS records plus any custom-domain binding for this hostname.
+
+That gives the owner three concrete things to verify without pretending we controlled the name. The retained material does not confirm that this report was delivered, acknowledged, remediated, or retested.
+
+## Remediation and defensive testing
+
+For asset owners, prevention is mostly lifecycle discipline:
+
+- inventory DNS names with service owner, provider product, resource identifier, and expiry date;
+- remove or change DNS before deleting a third-party resource;
+- use provider ownership verification where available, but document exactly what it protects;
+- alert on CNAME destinations, HTTP fingerprints, and certificate changes;
+- review A, AAAA, CNAME, NS, TXT, and provider-side aliases rather than relying on one record type; and
+- verify decommissioning from multiple resolvers after TTL expiry.
+
+A safe retest should confirm that DNS no longer routes to an abandoned service and that the provider no longer returns a missing-resource fingerprint. If provider claimability must be evaluated, the owner should do it in a controlled account or explicitly authorize a minimal test with cleanup steps. A TXT record alone is not a passing test.
+
+The best result from this investigation was not a takeover. It was catching our own reasoning before a scanner label became a vulnerability claim.

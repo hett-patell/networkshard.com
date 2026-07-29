@@ -2,7 +2,7 @@
 title: "My Honeypot Dashboard Was Lying to Me for Two Weeks (and I Wrote It)"
 description: "273,469 events. 2,654 IPs. 54 countries. And a dashboard that confidently told me '7 countries' and '200 sessions' and a graph that quietly hid 95% of the data. The story of shipping v1.9 of ShardLure: not new attacks, but every way a tool misrepresents scale — and how I caught it."
 date: 2026-06-04
-category: "operations"
+category: "research"
 tags: ["ssh", "honeypot", "cowrie", "shardlure", "golang", "sqlite", "telemetry", "code-review", "data-integrity", "oracle-cloud"]
 readTime: "16 min read"
 ---

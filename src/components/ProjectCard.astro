@@ -8,7 +8,6 @@ interface Props {
   tech: string[];
   github?: string;
   href?: string;
-  /** path label prefix shown above the title, e.g. "/projects/" or "/tools/" */
   pathPrefix: string;
 }
 
@@ -16,61 +15,33 @@ const { name, description, tech, github, href, pathPrefix } = Astro.props;
 const isExternal = href?.startsWith('http');
 ---
 
-<div class="bento-card">
-  <div class="mb-2">
-    <span class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60">
-      {pathPrefix}{slugify(name)}
-    </span>
+<article class="project-row">
+  <div class="project-path">{pathPrefix}{slugify(name)}</div>
+  <div class="project-body">
     {href ? (
-      <a
-        href={href}
-        target={isExternal ? "_blank" : undefined}
-        rel={isExternal ? "noopener" : undefined}
-        class="block mt-1 text-base font-semibold text-foreground hover:text-primary transition-colors"
-      >
-        {name}
-      </a>
-    ) : (
-      <h3 class="text-base font-semibold text-foreground mt-1">{name}</h3>
-    )}
+      <h3><a href={href} target={isExternal ? '_blank' : undefined} rel={isExternal ? 'noopener' : undefined}>{name}</a></h3>
+    ) : <h3>{name}</h3>}
+    <p>{description}</p>
+    {tech.length > 0 && <ul aria-label={`${name} technologies`}>{tech.map((item) => <li>{item}</li>)}</ul>}
   </div>
-  <p class="text-sm text-muted-foreground leading-relaxed mb-3">{description}</p>
-  <div class="flex flex-wrap items-center justify-between gap-3">
-    {tech.length > 0 && (
-      <div class="flex flex-wrap items-center gap-1.5">
-        <span class="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/60 mr-1">
-          Technologies:
-        </span>
-        {tech.map((t) => (
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono bg-muted/70 text-muted-foreground border border-border/60">
-            {t}
-          </span>
-        ))}
-      </div>
-    )}
-    <div class="flex items-center gap-3 shrink-0">
-      {href && (
-        <a
-          href={href}
-          target={isExternal ? "_blank" : undefined}
-          rel={isExternal ? "noopener" : undefined}
-          class="text-[11px] font-mono text-primary-hover hover:text-primary transition-colors"
-          aria-label={`${name} details`}
-        >
-          {isExternal ? "live demo →" : "details →"}
-        </a>
-      )}
-      {github && (
-        <a
-          href={github}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label={`${name} on GitHub`}
-        >
-          <Icon name="github" class="size-4" />
-        </a>
-      )}
-    </div>
+  <div class="project-actions">
+    {href && <a href={href} target={isExternal ? '_blank' : undefined} rel={isExternal ? 'noopener' : undefined} aria-label={`View ${name}`}>{isExternal ? 'Visit ↗' : 'Details →'}</a>}
+    {github && <a href={github} target="_blank" rel="noopener noreferrer" aria-label={`${name} source on GitHub`}><Icon name="github" class="size-4" /><span>Source</span></a>}
   </div>
-</div>
+</article>
+
+<style>
+  .project-row { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) auto; gap: 1.5rem; padding: 1.5rem 0; border-top: 1px solid var(--border); }
+  .project-row:last-child { border-bottom: 1px solid var(--border); }
+  .project-path { color: var(--muted-foreground); font-size: .62rem; overflow-wrap: anywhere; }
+  .project-body h3 { margin: 0; font-size: 1rem; }
+  .project-body h3 a { color: inherit; text-decoration: none; }
+  .project-body h3 a:hover { color: var(--primary-text, var(--primary)); }
+  .project-body p { margin: .5rem 0 .8rem; color: var(--muted-foreground); font-size: .78rem; line-height: 1.65; }
+  .project-body ul { display: flex; flex-wrap: wrap; gap: .35rem .8rem; margin: 0; padding: 0; list-style: none; color: var(--muted-foreground); font-size: .64rem; }
+  .project-body li:not(:last-child)::after { content: ' /'; color: var(--border); }
+  .project-actions { display: flex; flex-direction: column; align-items: flex-end; gap: .65rem; }
+  .project-actions a { display: inline-flex; align-items: center; gap: .35rem; color: var(--muted-foreground); font-size: .67rem; text-decoration: none; }
+  .project-actions a:hover { color: var(--primary-text, var(--primary)); }
+  @media (max-width: 640px) { .project-row { grid-template-columns: 1fr auto; gap: .75rem 1rem; } .project-path { grid-column: 1 / -1; } .project-actions span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); } }
+</style>

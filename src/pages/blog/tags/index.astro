@@ -4,8 +4,6 @@ import { getPublishedPosts } from '../../../lib/posts';
 import { slugify } from '../../../lib/slugify';
 
 const posts = await getPublishedPosts();
-
-// Group by slug so divergent casings (e.g. "CVE" / "cve") collapse to one chip.
 const tagMap = new Map<string, { label: string; count: number }>();
 for (const post of posts) {
   for (const tag of post.data.tags || []) {
@@ -15,27 +13,32 @@ for (const post of posts) {
     else tagMap.set(slug, { label: tag, count: 1 });
   }
 }
-
 const sortedTags = [...tagMap.entries()].sort((a, b) => b[1].count - a[1].count);
 ---
 
-<BaseLayout title="Tags — Blog" description="Browse cybersecurity articles by topic and category.">
-  <section class="pb-10 md:pb-12">
-    <header class="mb-6">
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight mb-2">Tags</h1>
-      <p class="text-base text-muted-foreground">Browse articles by topic.</p>
+	<BaseLayout title="Tags — Blog" description="Browse cybersecurity articles by topic and category." image={`${Astro.site}og/tags.png`}>
+  <section class="pb-12">
+    <header class="border-b border-border pb-8 md:pb-10">
+      <p class="mb-3 text-xs uppercase tracking-[0.18em] text-primary">/blog/tags</p>
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h1 class="text-4xl font-bold tracking-[-0.05em] text-foreground md:text-6xl">Topics</h1>
+          <p class="mt-3 text-sm text-muted-foreground">Browse articles by subject.</p>
+        </div>
+        <span class="text-xs text-muted-foreground">{String(sortedTags.length).padStart(2, '0')} total</span>
+      </div>
     </header>
 
-    <div class="flex flex-wrap gap-2">
-      {sortedTags.map(([slug, { label, count }]) => (
-        <a
-          href={`/blog/tags/${slug}`}
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-mono border border-border/60 bg-muted/50 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
-        >
-          {label}
-          <span class="text-[10px] text-muted-foreground/60">{count}</span>
-        </a>
+    <ol class="border-b border-border" role="list">
+      {sortedTags.map(([slug, { label, count }], index) => (
+        <li>
+          <a href={`/blog/tags/${slug}`} class="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-t border-border py-4 text-sm">
+            <span class="text-[11px] text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
+            <span class="font-semibold text-foreground transition-colors group-hover:text-primary">{label}</span>
+            <span class="text-xs text-muted-foreground">{count} {count === 1 ? 'post' : 'posts'} →</span>
+          </a>
+        </li>
       ))}
-    </div>
+    </ol>
   </section>
 </BaseLayout>

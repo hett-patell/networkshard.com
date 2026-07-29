@@ -5,37 +5,30 @@ import { slugify } from '../../../lib/slugify';
 import PostList from '../../../components/PostList.astro';
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
+  const allPosts = await getPublishedPosts();
   const slugs = new Set<string>();
-  for (const post of posts) {
+  for (const post of allPosts) {
     for (const tag of post.data.tags || []) slugs.add(slugify(tag));
   }
-  return [...slugs].map((tag) => ({ params: { tag } }));
+  return [...slugs].map((tag) => ({ params: { tag }, props: { allPosts } }));
 }
 
 const { tag } = Astro.params;
-
-const allPosts = await getPublishedPosts();
-const posts = allPosts.filter((post) =>
-  (post.data.tags || []).some((t) => slugify(t) === tag)
-);
-
-// Display the original (raw) tag spelling that maps to this slug.
-const label =
-  posts.flatMap((p) => p.data.tags || []).find((t) => slugify(t) === tag) ||
-  (tag || 'tag').replace(/-/g, ' ');
+const allPosts = (Astro.props.allPosts || await getPublishedPosts()) as Awaited<ReturnType<typeof getPublishedPosts>>;
+const posts = allPosts.filter((post) => (post.data.tags || []).some((item) => slugify(item) === tag));
+const label = posts.flatMap((post) => post.data.tags || []).find((item) => slugify(item) === tag) || (tag || 'tag').replace(/-/g, ' ');
 ---
 
-<BaseLayout title={`${label} — Blog`} description={`Articles tagged "${label}" — cybersecurity, penetration testing, and security research.`}>
-  <section class="pb-10 md:pb-12">
-    <header class="mb-6">
-      <a href="/blog/tags" class="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">&larr; All tags</a>
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight mt-3 mb-2">
-        <span class="text-primary">#</span>{label}
-      </h1>
-      <p class="text-base text-muted-foreground">{posts.length} {posts.length === 1 ? 'article' : 'articles'}</p>
+	<BaseLayout title={`${label} — Blog`} description={`Articles tagged "${label}" — cybersecurity, penetration testing, and security research.`} image={`${Astro.site}og/tags/${tag}.png`}>
+  <section class="pb-12">
+    <header class="mb-8 border-b border-border pb-8 md:pb-10">
+      <a href="/blog/tags" class="text-xs text-muted-foreground transition-colors hover:text-foreground">← all topics</a>
+      <p class="mb-3 mt-6 text-xs uppercase tracking-[0.18em] text-primary">/blog/tags/{tag}</p>
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h1 class="text-4xl font-bold tracking-[-0.05em] text-foreground md:text-6xl">{label}</h1>
+        <p class="text-xs text-muted-foreground">{posts.length} {posts.length === 1 ? 'article' : 'articles'}</p>
+      </div>
     </header>
-
     <PostList posts={posts} variant="detailed" />
   </section>
 </BaseLayout>

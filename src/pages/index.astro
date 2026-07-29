@@ -1,19 +1,42 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SocialLinks from '../components/SocialLinks.astro';
-import { getPublishedPosts } from '../lib/posts';
+import { getPostSlug, getPublishedPosts } from '../lib/posts';
 import { personSchema, websiteSchema } from '../lib/jsonld';
 import { computeReadTime } from '../lib/readTime';
 
 const posts = await getPublishedPosts();
 const latestPost = posts[0] || null;
-const latestReadTime = latestPost ? computeReadTime(latestPost.body, latestPost.data.readTime) : '';
-const ogImage = `${Astro.site}og/home.png`;
+const latestReadTime = latestPost ? computeReadTime(latestPost.body ?? '', latestPost.data.readTime) : '';
 const latestPostDescription = latestPost?.data.description?.trim() || '';
-const shouldShowLatestDescription =
-  !!latestPost &&
-  latestPostDescription.length > 0 &&
-  latestPostDescription.toLowerCase() !== latestPost.data.title.trim().toLowerCase();
+const ogImage = `${Astro.site}og/home.png`;
+
+const projects = [
+  {
+    name: 'ShardC2',
+    href: '/shardc2',
+    type: 'Red team infrastructure',
+    description: 'A policy-aware command-and-control framework with RBAC, audit logs, encrypted payloads, and operational safety controls.',
+  },
+  {
+    name: 'ShardLure',
+    href: '/shardlure',
+    type: 'Threat intelligence',
+    description: 'An SSH honeypot that clusters bot behavior, classifies intent, and exports indicators as STIX 2.1.',
+  },
+  {
+    name: 'ShardFlow',
+    href: '/shardflow',
+    type: 'Network research',
+    description: 'A Linux layer-2 workbench for discovering devices and applying per-target traffic policy in authorized labs.',
+  },
+];
+
+const credentials = [
+  ['Recognition', 'CERT-In Hall of Fame', 'September & October 2025'],
+  ['Certification', 'CRTA', 'Certified Red Team Analyst'],
+  ['Labs', 'TryHackMe top 8%', '@hettt'],
+];
 ---
 
 <BaseLayout
@@ -22,159 +45,164 @@ const shouldShowLatestDescription =
   image={ogImage}
   jsonLd={[personSchema(), websiteSchema()]}
 >
-  <section class="hero-section relative py-0" id="hero">
-    <div class="bento-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-
-      <!-- Row 1: Unified hero (photo + identity) -->
-      <div class="bento-card bento-hero sm:col-span-2 md:col-span-3 !p-0 overflow-hidden">
-        <div class="flex flex-col sm:flex-row">
-          <!-- Photo side -->
-          <div class="bento-hero__photo relative w-full sm:w-[220px] md:w-[260px] shrink-0 bg-muted/30 overflow-hidden" aria-hidden="true">
-            <div class="aspect-[2/3] sm:aspect-auto sm:h-full w-full relative">
-              <img
-                src="/photo.webp"
-                alt="Het Patel — Cybersecurity Engineer"
-                width="832"
-                height="832"
-                class="absolute inset-0 w-full h-full object-contain photo-light"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-              />
-              <img
-                src="/photo-dark.webp"
-                alt="Het Patel — Cybersecurity Engineer"
-                width="832"
-                height="832"
-                class="absolute inset-0 w-full h-full object-contain photo-dark"
-                loading="eager"
-                fetchpriority="low"
-                decoding="async"
-              />
-            </div>
-          </div>
-
-          <!-- Identity side -->
-          <div class="bento-hero__identity flex-1 p-5 md:p-8 flex flex-col justify-center relative overflow-hidden">
-            <div class="bento-hero__identity-content">
-              <!-- Role -->
-              <p class="identity-role flex items-center gap-2 font-mono text-xs text-muted-foreground mb-4">
-                <span class="identity-role__dot inline-block w-2 h-2 rounded-full bg-primary shrink-0" style="box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent)" aria-hidden="true"></span>
-                Cybersecurity Engineer — Intern<span class="text-muted-foreground/40">/</span>Inventyv
-              </p>
-
-              <!-- Title -->
-              <h1 class="identity-title font-black tracking-tighter uppercase leading-none text-3xl md:text-[2.75rem] lg:text-5xl">
-                <span class="identity-title__line">Trust nothing.</span><br/>
-                <span class="identity-title__line text-primary">Test everything.</span>
-              </h1>
-
-              <!-- Bio -->
-              <div class="identity-bio mt-4 text-[0.875rem] md:text-[0.9375rem] text-muted-foreground max-w-md leading-relaxed space-y-1">
-                <p>
-                  I'm Het — <span class="text-foreground/90 font-medium">Cybersecurity Engineer</span> &
-                  <span class="text-foreground/90 font-medium">VAPT specialist</span>.
-                  Penetration testing, vulnerability assessment, and
-                  <span class="text-foreground/90 font-medium">security research</span>.
-                </p>
-              </div>
-
-              <!-- CTA -->
-              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-6">
-                <a href="/blog" class="btn-neo-primary min-h-[44px] sm:min-h-0 w-full sm:w-auto text-center">Read the blog</a>
-                <a href="/about" class="btn-neo-outline min-h-[44px] sm:min-h-0 w-full sm:w-auto text-center">About me</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2: Latest Post (spans 2 cols) -->
-      <div class="bento-card sm:col-span-2 md:col-span-2">
-        {latestPost ? (
-          <a href={`/blog/${latestPost.slug}`} class="block group">
-            <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Latest post</span>
-            <p class="mt-3 text-lg font-semibold text-foreground group-hover:text-primary transition-colors">{latestPost.data.title}</p>
-            {shouldShowLatestDescription && (
-              <p class="mt-1 text-sm text-muted-foreground leading-relaxed line-clamp-2">{latestPostDescription}</p>
-            )}
-            <div class="mt-3 flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground">
-              <time>{latestPost.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-              {latestReadTime && <><span aria-hidden="true">&middot;</span><span>{latestReadTime}</span></>}
-            </div>
-          </a>
-        ) : (
-          <div>
-            <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Latest post</span>
-            <p class="mt-3 text-sm text-muted-foreground">Coming soon...</p>
-          </div>
-        )}
-        <div class="mt-4 pt-3 border-t border-border">
-          <a href="/blog" class="text-xs font-mono text-muted-foreground hover:text-primary transition-colors">
-            View all posts &rarr;
-          </a>
-        </div>
-      </div>
-
-      <!-- Connect Card -->
-      <div class="bento-card bento-connect">
-        <div class="flex h-full flex-col gap-5">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">Contact</span>
-          </div>
-          <div class="h-px w-full bg-border/60" aria-hidden="true"></div>
-
-          <p class="identity-title text-[2rem] leading-[0.95] text-foreground">
-            <span>Let's</span><br />
-            <span>connect.</span>
+  <div class="editorial-home">
+    <section class="intro" aria-labelledby="intro-title">
+      <p class="eyebrow">Het Patel · Cybersecurity Engineer</p>
+      <div class="intro-grid">
+        <h1 id="intro-title">Trust nothing.<br /><span>Test everything.</span></h1>
+        <figure class="portrait">
+          <img class="portrait-light" src="/photo.webp" alt="Portrait of Het Patel" width="832" height="832" loading="eager" fetchpriority="high" decoding="async" />
+          <img class="portrait-dark" src="/photo-dark.webp" alt="" width="832" height="832" loading="eager" decoding="async" aria-hidden="true" />
+          <figcaption>Ahmedabad, India · Inventyv</figcaption>
+        </figure>
+        <div class="intro-body">
+          <p class="lede">
+            I build and test security systems across web applications, infrastructure, and adversary simulation—then document what survives contact with reality.
           </p>
-
-          <SocialLinks />
+          <nav class="intro-links" aria-label="Explore the site">
+            <a href="/blog">Read the writing <span aria-hidden="true">↗</span></a>
+            <a href="/projects">View all projects <span aria-hidden="true">↗</span></a>
+            <a href="/about">About Het <span aria-hidden="true">↗</span></a>
+          </nav>
         </div>
       </div>
+    </section>
 
-      <!-- Row 3: Small info cards -->
-      <!-- Hall of Fame Card -->
-      <div class="bento-card">
-        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Hall of Fame</span>
-        <p class="mt-2 text-lg font-bold text-foreground">CERT-IN</p>
-        <p class="text-sm text-muted-foreground">September & October 2025</p>
+    <section class="latest" aria-labelledby="latest-heading">
+      <header class="section-heading">
+        <h2 id="latest-heading">Latest writing</h2>
+        <a href="/blog">Archive <span aria-hidden="true">→</span></a>
+      </header>
+      {latestPost ? (
+        <article class="latest-row">
+          <div class="latest-meta">
+            <time datetime={latestPost.data.date.toISOString()}>
+              {latestPost.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            </time>
+            {latestReadTime && <span>{latestReadTime}</span>}
+          </div>
+          <div>
+            <h3><a href={`/blog/${getPostSlug(latestPost)}`}>{latestPost.data.title}</a></h3>
+            {latestPostDescription && <p>{latestPostDescription}</p>}
+          </div>
+          <a class="row-arrow" href={`/blog/${getPostSlug(latestPost)}`} aria-label={`Read ${latestPost.data.title}`}><span aria-hidden="true">↗</span></a>
+        </article>
+      ) : (
+        <p class="empty-state">New field notes are in progress.</p>
+      )}
+    </section>
+
+    <section aria-labelledby="work-heading">
+      <header class="section-heading">
+        <h2 id="work-heading">Selected security work</h2>
+        <a href="/projects">All projects <span aria-hidden="true">→</span></a>
+      </header>
+      <ol class="project-list">
+        {projects.map((project, index) => (
+          <li>
+            <a href={project.href}>
+              <span class="project-index">0{index + 1}</span>
+              <span class="project-copy"><strong>{project.name}</strong><small>{project.type}</small><span>{project.description}</span></span>
+              <span class="row-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="research" aria-labelledby="research-heading">
+      <header class="section-heading"><h2 id="research-heading">Research & credentials</h2></header>
+      <div class="research-grid">
+        <div class="research-note">
+          <p class="eyebrow">Current practice</p>
+          <p>Penetration testing, vulnerability validation, security research, and Linux-first defensive engineering.</p>
+          <a href="/about">Experience and research <span aria-hidden="true">→</span></a>
+        </div>
+        <dl class="credential-list">
+          {credentials.map(([label, title, detail]) => (
+            <div>
+              <dt>{label}</dt>
+              <dd><strong>{title}</strong><span>{detail}</span></dd>
+            </div>
+          ))}
+        </dl>
       </div>
+    </section>
 
-      <!-- Certification Card -->
-      <div class="bento-card">
-        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Certification</span>
-        <p class="mt-2 text-lg font-bold text-foreground">CRTA</p>
-        <p class="text-sm text-muted-foreground">Certified Red Team Analyst</p>
+    <section class="contact" aria-labelledby="contact-heading">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-heading">Have a system worth testing?</h2>
+        <p>For security work, research, or a thoughtful technical conversation.</p>
       </div>
-
-      <!-- TryHackMe Card -->
-      <a href="https://tryhackme.com/p/hettt" target="_blank" rel="noopener" class="bento-card group block">
-        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">TryHackMe</span>
-        <p class="mt-2 text-lg font-bold text-foreground">Top 8%</p>
-        <p class="text-sm text-muted-foreground group-hover:text-primary transition-colors">@hettt</p>
-      </a>
-
-    </div>
-  </section>
+      <SocialLinks />
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  /* Light/dark photo switching — matches merox.dev pattern */
-  .photo-light { display: block; }
-  .photo-dark { display: none; }
-  :global([data-theme="dark"]) .photo-light { display: none; }
-  :global([data-theme="dark"]) .photo-dark { display: block; }
+  .editorial-home { width: 100%; max-width: 56rem; margin-inline: auto; padding: clamp(2rem, 6vw, 5.5rem) 0 4rem; }
+  .intro { padding-bottom: clamp(4rem, 9vw, 7rem); }
+  .intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) clamp(14rem, 27vw, 18rem); align-items: center; gap: 1.5rem clamp(2rem, 5vw, 4rem); margin-top: 1.15rem; }
+  .eyebrow, .section-heading h2 { margin: 0; font-size: .7rem; font-weight: 650; letter-spacing: .13em; text-transform: uppercase; color: var(--muted-foreground); }
+  h1 { margin: 0; max-width: 13ch; align-self: center; font-size: clamp(2.35rem, 5vw, 4.05rem); font-weight: 750; letter-spacing: -.055em; line-height: .98; }
+  h1 span { color: var(--primary-text, var(--primary)); }
+  .intro-body { grid-column: 1 / -1; padding-top: .5rem; }
+  .lede { margin: 0; width: 100%; max-width: none; color: var(--muted-foreground); font-size: clamp(.95rem, 1.8vw, 1.1rem); line-height: 1.75; }
+  .intro-links { display: flex; flex-wrap: wrap; gap: .8rem 1.5rem; margin-top: 2rem; }
+  .intro-links a, .section-heading a, .research-note a { color: var(--foreground); font-size: .78rem; text-decoration: none; }
+  .intro-links a:hover, .section-heading a:hover, .research-note a:hover { color: var(--primary-text, var(--primary)); }
+  .portrait { margin: 0; }
+  .portrait img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center 22%; filter: grayscale(1); border-bottom: 1px solid var(--border); }
+  .portrait-dark { display: none; }
+  :global([data-theme="dark"]) .portrait-light { display: none; }
+  :global([data-theme="dark"]) .portrait-dark { display: block; }
+  .portrait figcaption { margin-top: .65rem; color: var(--muted-foreground); font-size: .65rem; line-height: 1.4; }
+  section + section { margin-top: clamp(4rem, 9vw, 7rem); }
+  .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding-bottom: .85rem; border-bottom: 1px solid var(--border); }
+  .latest-row { display: grid; grid-template-columns: 8.5rem 1fr auto; gap: 1.5rem; align-items: start; padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+  .latest-meta { display: flex; flex-direction: column; gap: .3rem; color: var(--muted-foreground); font-size: .68rem; }
+  .latest-row h3 { margin: 0; font-size: clamp(1.1rem, 2.5vw, 1.45rem); line-height: 1.3; }
+  .latest-row h3 a { color: inherit; text-decoration: none; }
+  .latest-row h3 a:hover { color: var(--primary-text, var(--primary)); }
+  .latest-row p { margin: .65rem 0 0; color: var(--muted-foreground); font-size: .82rem; line-height: 1.65; }
+  .row-arrow { color: var(--muted-foreground); text-decoration: none; }
+  .empty-state { padding: 1.5rem 0; border-bottom: 1px solid var(--border); color: var(--muted-foreground); }
+  .project-list { margin: 0; padding: 0; list-style: none; }
+  .project-list li { border-bottom: 1px solid var(--border); }
+  .project-list a { display: grid; grid-template-columns: 3rem 1fr auto; gap: 1rem; align-items: start; padding: 1.5rem 0; color: inherit; text-decoration: none; }
+  .project-list a:hover strong, .project-list a:hover .row-arrow { color: var(--primary-text, var(--primary)); }
+  .project-index { color: var(--muted-foreground); font-size: .7rem; }
+  .project-copy { display: grid; grid-template-columns: minmax(8rem, .5fr) 1fr; gap: .25rem 1.5rem; }
+  .project-copy strong { font-size: 1rem; transition: color .15s ease; }
+  .project-copy small { grid-column: 1; color: var(--muted-foreground); font-size: .67rem; }
+  .project-copy > span { grid-column: 2; grid-row: 1 / span 2; color: var(--muted-foreground); font-size: .78rem; line-height: 1.6; }
+  .research-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: clamp(2rem, 7vw, 5rem); padding-top: 1.5rem; }
+  .research-note > p:not(.eyebrow) { margin: .9rem 0 1.3rem; color: var(--muted-foreground); font-size: .86rem; line-height: 1.7; }
+  .credential-list { margin: 0; }
+  .credential-list > div { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; padding: 0 0 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .credential-list dt { color: var(--muted-foreground); font-size: .68rem; }
+  .credential-list dd { margin: 0; display: flex; flex-direction: column; gap: .25rem; }
+  .credential-list strong { font-size: .84rem; }
+  .credential-list span { color: var(--muted-foreground); font-size: .7rem; }
+  .contact { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: end; padding: 2rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .contact h2 { margin: .8rem 0; font-size: clamp(1.45rem, 4vw, 2.3rem); letter-spacing: -.04em; line-height: 1.1; }
+  .contact p:not(.eyebrow) { margin: 0; color: var(--muted-foreground); font-size: .8rem; line-height: 1.6; }
+  @media (max-width: 640px) {
+    .editorial-home { padding-top: 1.5rem; }
+    .intro { padding-bottom: 3.5rem; }
+    .intro > .eyebrow { max-width: 100%; font-size: .58rem; letter-spacing: .07em; line-height: 1.5; }
+    .intro-grid { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; margin-top: 1rem; }
+    h1 { width: 100%; max-width: none; align-self: auto; font-size: clamp(1.85rem, 9vw, 2.25rem); letter-spacing: -.055em; line-height: 1.05; text-align: left; overflow-wrap: normal; }
+    .portrait { grid-row: 2; width: min(14rem, 72vw); text-align: left; }
+    .portrait figcaption { text-align: left; }
+    .intro-body { grid-column: 1; grid-row: 3; padding-top: .25rem; }
+    .intro-links { justify-content: flex-start; gap: .75rem 1.1rem; margin-top: 1.5rem; }
+    .latest-row { grid-template-columns: 1fr auto; gap: 1rem; }
+    .latest-meta { grid-column: 1 / -1; flex-direction: row; gap: 1rem; }
+    .project-copy { grid-template-columns: 1fr; }
+    .project-copy > span, .project-copy small { grid-column: 1; grid-row: auto; }
+    .research-grid, .contact { grid-template-columns: 1fr; }
+    .contact { align-items: start; }
+  }
 </style>
-
-<script is:inline>
-  // Handle photo load error - show fallback
-  document.addEventListener('DOMContentLoaded', () => {
-    const img = document.querySelector('.bento-hero__photo img');
-    if (img) {
-      img.addEventListener('error', () => {
-        img.style.display = 'none';
-      });
-    }
-  });
-</script>

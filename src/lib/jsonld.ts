@@ -45,3 +45,39 @@ export function breadcrumbSchema(
     })),
   };
 }
+
+/** schema.org Article — used on individual blog post pages. */
+export function articleSchema(args: {
+  headline: string;
+  description: string;
+  image: string;
+  datePublished: Date;
+  articleSection: string;
+  url: string;
+  tags?: string[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: args.headline,
+    description: args.description,
+    image: args.image,
+    datePublished: args.datePublished.toISOString(),
+    articleSection: args.articleSection,
+    author: {
+      '@type': 'Person',
+      name: SITE.author,
+      url: `${SITE.url}/about`,
+    },
+    publisher: {
+      '@type': 'Person',
+      name: SITE.author,
+      url: SITE.url,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': args.url,
+    },
+    ...(args.tags && args.tags.length > 0 && { keywords: args.tags.join(', ') }),
+  };
+}

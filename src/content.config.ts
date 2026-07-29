@@ -1,12 +1,15 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+import { CATEGORY_IDS } from './lib/taxonomy';
 
 const blog = defineCollection({
-  type: 'content',
+  loader: glob({ base: './src/content/blog', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
     date: z.date(),
-    category: z.string().optional(),
+    category: z.enum(CATEGORY_IDS),
     tags: z.array(z.string()).optional(),
     readTime: z.string().optional(),
     draft: z.boolean().optional().default(false),

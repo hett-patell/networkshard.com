@@ -2,6 +2,11 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Post = CollectionEntry<'blog'>;
 
+/** Derive the public blog slug from the content-layer entry ID. */
+export function getPostSlug(post: Pick<Post, 'id'>): string {
+  return post.id.replace(/\.(?:md|mdx)$/, '').replace(/\/index$/, '');
+}
+
 /**
  * Canonical post fetch: published (non-draft) posts, newest first.
  * Routing every page through this guarantees consistent draft filtering —

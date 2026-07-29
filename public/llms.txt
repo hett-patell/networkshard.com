@@ -21,7 +21,6 @@
 
 - [I Mass-Accepted SSH Logins for 48 Hours](https://networkshard.com/blog/ssh-honeypot-48-hours): 38,208 events, 374 unique IPs, 12 malware samples captured.
 - [ShardLure: The Dashboard Was Lying](https://networkshard.com/blog/shardlure-the-dashboard-was-lying): HASSH fingerprinting and attacker intent classification.
-- [From Shodan to SQLi](https://networkshard.com/blog/from-shodan-to-sqli): OSINT-to-exploitation chain walkthrough.
 
 ## Author
 

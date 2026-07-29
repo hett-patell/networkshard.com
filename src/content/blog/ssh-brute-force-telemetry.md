@@ -2,7 +2,7 @@
 title: "SSH Under Siege: 30 Days of Brute-Force Telemetry on an Exposed VM 🌐"
 description: "1,595 brute-force attempts. 64 IPs. 20+ countries. A month of SSH login fails against my Oracle Cloud VM, with a globe to make it look impressive."
 date: 2026-04-25
-category: "operations"
+category: "threat-intel"
 tags: ["ssh", "brute-force", "fail2ban", "oracle-cloud", "telemetry"]
 readTime: "6 min read"
 ---
