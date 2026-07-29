@@ -11,9 +11,10 @@ interface Props {
   image?: string;
   ogType?: string;
   jsonLd?: JsonLd | JsonLd[];
+  analytics?: boolean;
 }
 
-const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research.", image, ogType = 'website', jsonLd } = Astro.props;
+const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research.", image, ogType = 'website', jsonLd, analytics = true } = Astro.props;
 const currentPath = Astro.url.pathname;
 const buildCommit =
   import.meta.env.PUBLIC_COMMIT_SHA?.slice(0, 7) ||
@@ -76,134 +77,98 @@ const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
   <link rel="preload" href="/fonts/GeistMonoVF.woff2" as="font" type="font/woff2" crossorigin />
   <title>{title} — networkshard</title>
   {jsonLdBlocks.map((block) => (
-    <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(block)} />
   ))}
 </head>
-<body class="flex min-h-screen flex-col gap-y-6 font-mono">
+<body class="font-mono">
 
   <a href="#main-content" class="skip-link">Skip to content</a>
 
-  <!-- Header -->
-  <header class="bg-background/80 sticky top-0 z-50 w-full backdrop-blur-xl border-b border-border/40">
-      <div class="mx-auto flex h-16 max-w-3xl items-center justify-between px-4">
-        <a href="/" class="flex items-center gap-2 group" aria-label="Home">
-          <span class="font-mono text-sm font-bold tracking-tight text-foreground">networkshard</span>
-        </a>
+  <!-- Desktop masthead / mobile top bar -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="/" class="site-mark" aria-label="networkshard home">
+        <span>network</span><span>shard</span>
+      </a>
 
-        <div class="flex items-center gap-2 md:gap-6">
-          <nav class="hidden items-center gap-1 text-sm font-medium md:flex" aria-label="Primary navigation">
-            <NavLink href="/blog">Blog</NavLink>
-            <NavLink href="/projects">Projects</NavLink>
-            <NavLink href="/about">About</NavLink>
-          </nav>
-
-          <button
-            type="button"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-muted-foreground hover:[&_svg]:text-foreground size-9 rounded-full hover:bg-muted"
-            title="Search (Ctrl+K)"
-            aria-label="Search"
-            aria-haspopup="dialog"
-            aria-controls="search-dialog"
-          >
-            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          </button>
-
-          <button id="theme-toggle"
-            class="inline-flex items-center justify-center size-8 rounded-full hover:bg-muted transition-colors"
-            aria-label="Toggle theme">
-            <svg class="icon-sun size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <svg class="icon-moon size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          </button>
-
-          <!-- Mobile menu button -->
-          <button
-            id="mobile-menu-toggle"
-            type="button"
-            class="inline-flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors md:hidden"
-            aria-label="Open menu"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-          >
-            <svg class="mobile-menu-open size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-            <svg class="mobile-menu-close size-4 hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Mobile navigation -->
-      <nav
-        id="mobile-menu"
-        class="mobile-menu hidden border-t border-border/40 md:hidden"
-        aria-label="Mobile navigation"
-      >
-        <div class="mx-auto max-w-3xl px-4 py-3 flex flex-col gap-1">
-          <NavLink href="/blog" mobile>Blog</NavLink>
-          <NavLink href="/projects" mobile>Projects</NavLink>
-          <NavLink href="/about" mobile>About</NavLink>
-        </div>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <NavLink href="/blog">Blog</NavLink>
+        <NavLink href="/projects">Projects</NavLink>
+        <NavLink href="/about">About</NavLink>
       </nav>
+
+      <div class="site-tools">
+        <button
+          type="button"
+          class="square-control"
+          title="Search (Ctrl+K)"
+          aria-label="Search"
+          aria-haspopup="dialog"
+          aria-controls="search-dialog"
+        >
+          <svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+
+        <button id="theme-toggle" class="square-control" aria-label="Toggle theme">
+          <svg class="icon-sun size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+
+        <button
+          id="mobile-menu-toggle"
+          type="button"
+          class="square-control mobile-menu-button"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <svg class="mobile-menu-open size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="mobile-menu-close size-4 hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <nav id="mobile-menu" class="mobile-menu hidden" aria-label="Mobile navigation">
+      <NavLink href="/blog" mobile>Blog</NavLink>
+      <NavLink href="/projects" mobile>Projects</NavLink>
+      <NavLink href="/about" mobile>About</NavLink>
+    </nav>
   </header>
 
-  <div id="search-dialog" class="fixed inset-0 z-[60] hidden items-start justify-center bg-background/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Search articles">
-    <div class="relative z-10 w-[640px] max-w-[calc(100vw-2rem)] pt-16">
-      <div class="search-dialog__box relative bg-background border border-border rounded-lg shadow-lg">
+  <div id="search-dialog" class="search-dialog fixed inset-0 z-[60] hidden items-start justify-center" role="dialog" aria-modal="true" aria-label="Search articles">
+    <div class="relative z-10 w-[600px] max-w-[calc(100vw-2rem)] pt-16 md:pt-24">
+      <div class="search-dialog__box relative">
         <div class="relative">
-          <svg class="size-4 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <svg class="size-4 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           <input
             id="search-input"
-            placeholder="Search articles..."
-            class="w-full h-14 pl-12 pr-12 bg-transparent border-0 rounded-lg text-base outline-none focus:ring-2 focus:ring-primary/20 focus:ring-inset placeholder:text-muted-foreground/60"
+            placeholder="Search the archive"
+            class="w-full h-12 pl-12 pr-12 bg-transparent border-0 text-sm outline-none placeholder:text-muted-foreground"
             aria-label="Search articles"
             type="text"
           />
-          <button
-            type="button"
-            class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex size-9 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            aria-label="Close search"
-            data-search-close
-          >
-            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <button type="button" class="square-control absolute right-1.5 top-1/2 -translate-y-1/2" aria-label="Close search" data-search-close>
+            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
       </div>
 
-      <div id="search-results" class="search-dialog__box relative z-10 mt-2 max-h-[60vh] overflow-y-auto rounded-lg bg-background border border-border shadow-lg">
-        <div class="p-4 text-xs text-muted-foreground">
-          Start typing to search posts.
-        </div>
+      <div id="search-results" class="search-dialog__box relative z-10 mt-2 max-h-[60vh] overflow-y-auto">
+        <div class="p-4 text-xs text-muted-foreground">Start typing to search posts.</div>
       </div>
     </div>
   </div>
 
   <!-- Main -->
-  <main id="main-content" class="w-full mx-auto flex grow flex-col gap-y-6 px-4 pb-8 max-w-5xl min-h-[calc(100vh-8rem)] relative overflow-hidden">
-    <nav aria-label="Breadcrumb" class="pt-6">
-      <ol class="font-mono text-[11px] uppercase tracking-widest text-muted-foreground/80 flex flex-wrap items-center gap-1.5 break-words sm:gap-2.5" role="list" data-slot="breadcrumb-list">
+  <main id="main-content">
+    <nav aria-label="Breadcrumb" class="breadcrumbs">
+      <ol role="list" data-slot="breadcrumb-list">
         {breadcrumbs.map((c, idx) => {
           const isLast = idx === breadcrumbs.length - 1;
-          const isHome = c.href === '/';
           return (
-            <li class="inline-flex items-center gap-1.5">
-              {idx !== 0 && <span class="text-muted-foreground/40" aria-hidden="true">&gt;</span>}
-              {isLast ? (
-                <span class="inline-flex items-center gap-1 text-foreground/90">
-                  {isHome ? (
-                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-                  ) : (
-                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/></svg>
-                  )}
-                  {c.label}
-                </span>
-              ) : (
-                <a href={c.href} class="inline-flex items-center gap-1 hover:text-foreground transition-colors">
-                  {isHome ? (
-                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-                  ) : (
-                    <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/></svg>
-                  )}
-                  {c.label}
-                </a>
-              )}
+            <li>
+              {idx !== 0 && <span aria-hidden="true">/</span>}
+              {isLast ? <span aria-current="page">{c.label}</span> : <a href={c.href}>{c.label}</a>}
             </li>
           );
         })}
@@ -213,25 +178,15 @@ const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-border/40">
-    <div class="mx-auto max-w-3xl px-4 py-6">
-      <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-between sm:items-center">
-        <div class="flex flex-col items-center gap-3 font-mono text-[11px] sm:flex-row sm:items-center sm:gap-3">
-          <span class="text-xs text-muted-foreground/80">
-            <svg class="size-3 text-primary/60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
-            <span class="text-foreground/70">{buildCommit}</span>
-          </span>
-          <span class="hidden sm:inline text-muted-foreground/40 text-xs">&middot;</span>
-          <span class="text-xs text-foreground/80">&copy; {new Date().getFullYear()} Het Patel</span>
-          <span class="hidden sm:inline text-muted-foreground/40 text-xs">&middot;</span>
-          <nav class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-xs text-foreground/80" aria-label="Footer links">
-            <a href="/categories/" class="inline-block duration-300 ease-in-out hover:text-foreground transition-colors">Categories</a>
-            <span class="text-muted-foreground/40">&middot;</span>
-            <a href="/blog/tags" class="inline-block duration-300 ease-in-out hover:text-foreground transition-colors">Tags</a>
-          </nav>
-        </div>
-        <a href="mailto:awesomehet1@gmail.com" class="inline-block text-xs font-mono text-foreground/80 duration-300 ease-in-out hover:text-foreground transition-colors">Email</a>
-      </div>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span>&copy; {new Date().getFullYear()} Het Patel</span>
+      <nav aria-label="Footer links">
+        <a href="/categories/">Categories</a>
+        <a href="/blog/tags">Tags</a>
+        <a href="mailto:awesomehet1@gmail.com">Email</a>
+      </nav>
+      <span class="site-footer__build">build/{buildCommit}</span>
     </div>
   </footer>
 
@@ -286,25 +241,6 @@ const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
       });
     });
   </script>
-
-  {currentPath === '/' && (
-    <>
-      <!-- Spotlight effect (home page only) -->
-      <script is:inline>
-        document.addEventListener('DOMContentLoaded', () => {
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-          document.querySelectorAll('.bento-card:not(.bento-hero)').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-              const rect = card.getBoundingClientRect();
-              card.style.setProperty('--spotlight-x', `${e.clientX - rect.left}px`);
-              card.style.setProperty('--spotlight-y', `${e.clientY - rect.top}px`);
-            });
-          });
-        });
-      </script>
-    </>
-  )}
 
   <!-- Blog search dialog script -->
   <script is:inline>
@@ -457,18 +393,23 @@ const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
     });
   </script>
 
-  <!-- GoatCounter analytics (privacy-friendly, no cookies) -->
-  <script is:inline>
-    (function() {
-      if (window.location.host === 'localhost' || window.location.protocol === 'file:') return;
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = '//gc.zgo.at/count.js';
-      s.dataset.goatcounter = 'https://networkshard.goatcounter.com/count';
-      s.onerror = function() {};
-      document.head.appendChild(s);
-    })();
-  </script>
+  {analytics && (
+    <>
+      <!-- GoatCounter analytics (privacy-friendly, no cookies) -->
+      <script is:inline>
+        (function() {
+          var localHostnames = ['localhost', '127.0.0.1', '::1'];
+          if (localHostnames.includes(window.location.hostname) || window.location.protocol === 'file:') return;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = '//gc.zgo.at/count.js';
+          s.dataset.goatcounter = 'https://networkshard.goatcounter.com/count';
+          s.onerror = function() {};
+          document.head.appendChild(s);
+        })();
+      </script>
+    </>
+  )}
 
   {currentPath.startsWith('/blog/') && (
     <>

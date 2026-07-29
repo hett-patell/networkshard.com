@@ -1,24 +1,36 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPublishedPosts } from '../../lib/posts';
+import { getPostSlug, getPublishedPosts } from '../../lib/posts';
+import { CATEGORIES } from '../../lib/taxonomy';
 import PostList from '../../components/PostList.astro';
 
 const posts = await getPublishedPosts();
-
-const pinned = posts.find(p => p.data.pinned);
-const regularPosts = posts.filter(p => !p.data.pinned);
+const pinned = posts.find((post) => post.data.pinned);
+const regularPosts = posts.filter((post) => post.id !== pinned?.id);
+const categorySections = CATEGORIES.map((category) => ({
+  ...category,
+  publishedCount: posts.filter((post) => post.data.category === category.id).length,
+  posts: regularPosts.filter((post) => post.data.category === category.id),
+}));
 ---
 
 <BaseLayout title="Blog — Cybersecurity & Penetration Testing Articles" description="Articles on cybersecurity, penetration testing, vulnerability assessment, ethical hacking, and security research by Het Patel." image={`${Astro.site}og/blog.png`}>
+  <header class="mb-8 border-b border-border pb-8 md:mb-10 md:pb-10">
+    <p class="mb-3 text-xs uppercase tracking-[0.18em] text-primary">/blog</p>
+    <div class="grid gap-4 md:grid-cols-[1fr_16rem] md:items-end">
+      <h1 class="text-4xl font-bold tracking-[-0.05em] text-foreground md:text-6xl">Field notes</h1>
+      <p class="blog-intro text-sm leading-6 text-muted-foreground sm:hidden">Research and security engineering notes.</p>
+      <p class="blog-intro hidden text-sm leading-6 text-muted-foreground sm:block">Research, practical testing notes, and observations from security engineering work.</p>
+    </div>
+  </header>
 
   <!-- Pinned Post -->
   {pinned && (
     <section class="mb-10" aria-label="Pinned article">
-      <a href={`/blog/${pinned.slug}`} class="pinned-changelog block group">
-        <div class="flex items-center gap-2 mb-3.5">
-          <span class="pinned-changelog-dot"></span>
-          <span class="font-mono text-[11px] font-semibold uppercase tracking-widest text-primary">Pinned</span>
-          <span class="flex-1 h-px bg-border/70"></span>
+      <a href={`/blog/${getPostSlug(pinned)}`} class="group block border-b border-border pb-6">
+        <div class="mb-3.5 flex items-center gap-2">
+          <span class="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Pinned / 01</span>
+          <span class="h-px flex-1 bg-border"></span>
         </div>
         <h2 class="blog-card-title font-mono text-base font-semibold leading-snug text-foreground/90 motion-safe:transition-colors motion-safe:duration-150 group-hover:text-primary">{pinned.data.title}</h2>
         {pinned.data.description && pinned.data.description.trim().toLowerCase() !== pinned.data.title.trim().toLowerCase() && (
@@ -28,16 +40,39 @@ const regularPosts = posts.filter(p => !p.data.pinned);
     </section>
   )}
 
-  <!-- Blog Posts by Year -->
-  <section aria-label="Latest articles">
-    <div class="min-h-[calc(100vh-18rem)]">
-      <PostList posts={regularPosts} variant="compact" groupByYear />
-    </div>
+  <section class="flex min-h-[calc(100vh-18rem)] flex-col gap-8 md:gap-16" aria-label="Articles by category">
+    {categorySections.map((category, index) => (
+      <section aria-labelledby={`category-${category.id}`}>
+        <header class="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-baseline gap-2 border-t border-border py-4 sm:grid-cols-[2.5rem_minmax(0,1fr)_auto] sm:gap-3 sm:py-5">
+          <span class="text-[11px] text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
+          <div>
+            <h2 id={`category-${category.id}`} class="leading-snug">
+              <a href={category.href} class="font-semibold text-foreground transition-colors hover:text-primary focus-visible:text-primary">
+                {category.label}
+              </a>
+            </h2>
+            <p class="category-description mt-2 hidden max-w-2xl text-sm leading-6 text-muted-foreground sm:block">{category.description}</p>
+          </div>
+          <span class="whitespace-nowrap text-[11px] text-muted-foreground sm:text-xs">{category.publishedCount} {category.publishedCount === 1 ? 'post' : 'posts'}</span>
+        </header>
+        <PostList posts={category.posts} variant="compact" />
+      </section>
+    ))}
   </section>
 
-{posts.length === 0 && (
-    <div class="bento-card text-center py-12">
+  {posts.length === 0 && (
+    <div class="border-y border-border py-12 text-center">
       <p class="text-muted-foreground">No posts yet. Check back soon!</p>
     </div>
   )}
 </BaseLayout>
+
+<style>
+  .blog-intro,
+  .category-description {
+    text-align: left;
+    text-align-last: left;
+    overflow-wrap: normal;
+    hyphens: none;
+  }
+</style>

@@ -1,31 +1,22 @@
 ---
-import type { Post } from '../lib/posts';
-
-interface Props {
-  prev?: Post | null;
-  next?: Post | null;
-}
-
+import { getPostSlug, type Post } from '../lib/posts';
+interface Props { prev?: Post | null; next?: Post | null; }
 const { prev, next } = Astro.props;
 ---
 
 {(prev || next) && (
-  <nav class="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2" aria-label="Post navigation">
-    {prev ? (
-      <a href={`/blog/${prev.slug}`} class="bento-card group flex flex-col gap-1">
-        <span class="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">&larr; Previous</span>
-        <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary transition-colors line-clamp-2">{prev.data.title}</span>
-      </a>
-    ) : (
-      <span aria-hidden="true"></span>
-    )}
-    {next ? (
-      <a href={`/blog/${next.slug}`} class="bento-card group flex flex-col gap-1 sm:text-right sm:items-end">
-        <span class="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">Next &rarr;</span>
-        <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary transition-colors line-clamp-2">{next.data.title}</span>
-      </a>
-    ) : (
-      <span aria-hidden="true"></span>
-    )}
+  <nav class="post-nav" aria-label="Post navigation">
+    {prev && <a href={`/blog/${getPostSlug(prev)}`} rel="prev"><small>← Previous</small><span>{prev.data.title}</span></a>}
+    {next && <a href={`/blog/${getPostSlug(next)}`} rel="next"><small>Next →</small><span>{next.data.title}</span></a>}
   </nav>
 )}
+
+<style>
+  .post-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+  .post-nav a { display: flex; flex-direction: column; gap: .45rem; color: var(--foreground); text-decoration: none; }
+  .post-nav a:last-child { grid-column: 2; text-align: right; align-items: flex-end; }
+  .post-nav small { color: var(--muted-foreground); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; }
+  .post-nav span { max-width: 28ch; font-size: .78rem; line-height: 1.5; }
+  .post-nav a:hover span { color: var(--primary-text, var(--primary)); }
+  @media (max-width: 480px) { .post-nav { grid-template-columns: 1fr; gap: 1.5rem; } .post-nav a:last-child { grid-column: 1; text-align: left; align-items: flex-start; } }
+</style>

@@ -14,6 +14,7 @@ pnpm-debug.log*
 
 # local agent state
 .crew/
+.zcode/
 
 # environment variables
 .env

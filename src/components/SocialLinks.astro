@@ -1,35 +1,26 @@
 ---
-import Icon from './Icon.astro';
 import { SITE, SOCIAL } from '../lib/site';
-
-/**
- * Vertical social link list used in the home "Let's connect" bento card.
- * Data comes from src/lib/site.ts so URLs live in one place.
- */
 const links = [
-  { href: SOCIAL.github, icon: 'github', label: 'GitHub', external: true },
-  { href: SOCIAL.linkedin, icon: 'linkedin', label: 'LinkedIn', external: true },
-  { href: SOCIAL.rss, icon: 'rss', label: 'RSS', external: false },
-  { href: SOCIAL.medium, icon: 'medium', label: 'Medium', external: true },
-  { href: SOCIAL.thm, icon: 'thm', label: 'TryHackMe', external: true },
-  { href: SOCIAL.email, icon: 'mail', label: SITE.email, external: false, small: true },
+  { href: SOCIAL.github, label: 'GitHub', external: true },
+  { href: SOCIAL.linkedin, label: 'LinkedIn', external: true },
+  { href: SOCIAL.medium, label: 'Medium', external: true },
+  { href: SOCIAL.thm, label: 'TryHackMe', external: true },
+  { href: SOCIAL.rss, label: 'RSS', external: false },
+  { href: SOCIAL.email, label: SITE.email, external: false },
 ];
 ---
 
-<ul class="mt-auto flex flex-col gap-2 text-sm">
-  {links.map((l) => (
-    <li>
-      <a
-        href={l.href}
-        {...(l.external ? { target: '_blank', rel: 'noopener' } : {})}
-        class:list={[
-          'connect-item hover:text-primary transition-colors',
-          l.small && 'text-xs leading-tight break-words',
-        ]}
-      >
-        <Icon name={l.icon} class="connect-icon" />
-        {l.label}
-      </a>
-    </li>
+<ul class="social-links" aria-label="Contact and social links">
+  {links.map((link) => (
+    <li><a href={link.href} {...(link.external ? { target: '_blank', rel: 'noopener' } : {})}><span>{link.label}</span><span aria-hidden="true">{link.external ? '↗' : '→'}</span></a></li>
   ))}
 </ul>
+
+<style>
+  .social-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
+  .social-links li { border-bottom: 1px solid var(--border); }
+  .social-links li:nth-child(odd) { margin-right: 1rem; }
+  .social-links a { display: flex; justify-content: space-between; gap: .75rem; padding: .7rem 0; color: var(--muted-foreground); font-size: .68rem; line-height: 1.4; text-decoration: none; overflow-wrap: anywhere; }
+  .social-links a:hover { color: var(--primary-text, var(--primary)); }
+  @media (max-width: 420px) { .social-links { grid-template-columns: 1fr; } .social-links li:nth-child(odd) { margin-right: 0; } }
+</style>

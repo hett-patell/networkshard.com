@@ -1,0 +1,9 @@
+---
+import dashboardHtml from '../standalone/ssh-attacks.html?raw';
+
+const documentBody = dashboardHtml
+  .replace(/^<!doctype html>\s*/i, '')
+  .replace(/<html[^>]*>|<\/html>\s*$/gi, '');
+---
+
+<Fragment set:html={documentBody} />

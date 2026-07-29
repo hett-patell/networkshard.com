@@ -2,16 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="404 — Page Not Found" description="The page you're looking for doesn't exist.">
-  <section class="flex flex-col items-center justify-center text-center py-20 min-h-[calc(100vh-16rem)]">
-    <p class="font-mono text-xs font-semibold uppercase tracking-widest text-primary mb-4">Error 404</p>
-    <h1 class="text-5xl md:text-7xl font-bold text-foreground tracking-tight mb-4">Page not found</h1>
-    <p class="text-base text-muted-foreground max-w-md mb-8">
-      The page you're looking for doesn't exist or has been moved.
-    </p>
-    <div class="flex flex-col sm:flex-row items-center gap-3">
-      <a href="/" class="btn-neo-primary">Go home</a>
-      <a href="/blog" class="btn-neo-outline">Read the blog</a>
+	<BaseLayout title="404 — Page Not Found" description="The page you're looking for doesn't exist." image={`${Astro.site}og/404.png`}>
+  <section class="py-16 md:py-24">
+    <div class="border-y border-border py-8 md:py-12">
+      <p class="text-xs uppercase tracking-[0.18em] text-primary">HTTP / 404</p>
+      <div class="mt-8 grid gap-8 md:grid-cols-[10rem_1fr]">
+        <p class="text-6xl font-bold leading-none tracking-[-0.08em] text-foreground md:text-8xl">404</p>
+        <div class="max-w-xl">
+          <h1 class="text-2xl font-bold tracking-[-0.03em] text-foreground md:text-4xl">Page not found.</h1>
+          <p class="mt-4 text-sm leading-6 text-muted-foreground">The requested path does not exist or has moved. Choose a known route below.</p>
+          <nav class="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm" aria-label="Recovery links">
+            <a href="/" class="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">Home →</a>
+            <a href="/blog" class="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">Blog →</a>
+            <a href="/projects" class="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">Projects →</a>
+          </nav>
+        </div>
+      </div>
     </div>
   </section>
 </BaseLayout>

@@ -1,14 +1,20 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'astro/config';
 import rehypeImgAttrs from './src/lib/rehype-img-attrs.ts';
 
 export default defineConfig({
   site: 'https://networkshard.com',
   output: 'static',
-  integrations: [tailwind(), sitemap()],
+  integrations: [sitemap()],
   markdown: {
-    rehypePlugins: [rehypeImgAttrs],
+    processor: unified({
+      rehypePlugins: [rehypeImgAttrs],
+    }),
+  },
+  vite: {
+    plugins: [tailwindcss()],
   },
 });

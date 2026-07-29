@@ -1,8 +1,11 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPublishedPosts } from '../../lib/posts';
+import { render } from 'astro:content';
+import { getPostSlug, getPublishedPosts } from '../../lib/posts';
 import { slugify } from '../../lib/slugify';
 import { computeReadTime } from '../../lib/readTime';
+import { categoryUrl, getCategoryLabel, isCategoryId, type CategoryId } from '../../lib/taxonomy';
+import { articleSchema } from '../../lib/jsonld';
 import TableOfContents from '../../components/TableOfContents.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import PostNav from '../../components/PostNav.astro';
@@ -11,13 +14,14 @@ import RelatedPosts from '../../components/RelatedPosts.astro';
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
   return posts.map((post, i) => {
+    const slug = getPostSlug(post);
     // posts are sorted newest-first: "next" = newer, "prev" = older
     const next = posts[i - 1] ?? null;
     const prev = posts[i + 1] ?? null;
 
     const tags = new Set(post.data.tags || []);
     const related = posts
-      .filter((p) => p.slug !== post.slug)
+      .filter((p) => p.id !== post.id)
       .map((p) => ({
         post: p,
         shared: (p.data.tags || []).filter((t) => tags.has(t)).length,
@@ -28,44 +32,33 @@ export async function getStaticPaths() {
       .map((r) => r.post);
 
     return {
-      params: { slug: post.slug },
+      params: { slug },
       props: { post, prev, next, related },
     };
   });
 }
 
 const { post, prev, next, related } = Astro.props;
-const { Content, headings } = await post.render();
-const readTime = computeReadTime(post.body, post.data.readTime);
+const slug = getPostSlug(post);
+const { Content, headings } = await render(post);
+const readTime = computeReadTime(post.body ?? '', post.data.readTime);
+const category = isCategoryId(post.data.category) ? post.data.category : 'research' as CategoryId;
+const categoryLabel = getCategoryLabel(category);
 
-const ogImage = `${Astro.site}og/${post.slug}.png`;
-const postUrl = `${Astro.site}blog/${post.slug}/`;
+const ogImage = `${Astro.site}og/${slug}.png`;
+const postUrl = `${Astro.site}blog/${slug}/`;
 const encodedUrl = encodeURIComponent(postUrl);
 const encodedTitle = encodeURIComponent(post.data.title);
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": post.data.title,
-  "description": post.data.description,
-  "image": ogImage,
-  "datePublished": post.data.date.toISOString(),
-  "author": {
-    "@type": "Person",
-    "name": "Het Patel",
-    "url": "https://networkshard.com/about",
-  },
-  "publisher": {
-    "@type": "Person",
-    "name": "Het Patel",
-    "url": "https://networkshard.com",
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": `${Astro.site}blog/${post.slug}/`,
-  },
-  ...(post.data.tags && { "keywords": post.data.tags.join(", ") }),
-};
+const jsonLd = articleSchema({
+  headline: post.data.title,
+  description: post.data.description,
+  image: ogImage,
+  datePublished: post.data.date,
+  articleSection: categoryLabel,
+  url: postUrl,
+  tags: post.data.tags,
+});
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} image={ogImage} ogType="article" jsonLd={jsonLd}>
@@ -75,18 +68,21 @@ const jsonLd = {
       <a href="/blog" class="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">&larr; Back to blog</a>
     </nav>
 
-    <header class="mb-8 pb-6 border-b border-border/40">
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight mb-3">
+    <header class="mb-8 border-b border-border pb-8">
+      <p class="mb-3 text-xs uppercase tracking-[0.18em] text-primary">/blog/{slug}</p>
+      <h1 class="mb-4 text-3xl font-bold leading-tight tracking-[-0.04em] text-foreground md:text-5xl">
         {post.data.title}
       </h1>
       <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-muted-foreground mb-4">
-        <time>{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+        <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
         <span class="text-muted-foreground/50">&middot;</span><span>{readTime}</span>
+        <span class="text-muted-foreground/50">&middot;</span>
+        <a href={categoryUrl(category)} class="transition-colors hover:text-primary">{categoryLabel}</a>
       </div>
       {post.data.tags && post.data.tags.length > 0 && (
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-4">
           {post.data.tags.map((tag: string) => (
-            <a href={`/blog/tags/${slugify(tag)}`} class="inline-block text-xs font-mono font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">{tag}</a>
+            <a href={`/blog/tags/${slugify(tag)}`} class="text-xs text-muted-foreground transition-colors hover:text-primary">#{tag}</a>
           ))}
         </div>
       )}
@@ -104,7 +100,7 @@ const jsonLd = {
         href={`https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center size-8 rounded-md border border-border bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+        class="inline-flex size-7 items-center justify-center border-b border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
         aria-label="Share on X"
       >
         <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -113,14 +109,14 @@ const jsonLd = {
         href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center size-8 rounded-md border border-border bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+        class="inline-flex size-7 items-center justify-center border-b border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
         aria-label="Share on LinkedIn"
       >
         <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
       </a>
       <button
         id="copy-link-btn"
-        class="inline-flex items-center justify-center size-8 rounded-md border border-border bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+        class="inline-flex size-7 items-center justify-center border-b border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
         aria-label="Copy link"
         data-url={postUrl}
       >
@@ -136,6 +132,7 @@ const jsonLd = {
       <h2 class="text-lg font-semibold tracking-tight text-foreground mb-6">Comments</h2>
       <div id="giscus-container" class="min-h-[8rem]">
         <script
+          is:inline
           src="https://giscus.app/client.js"
           data-repo="hett-patell/networkshard.com"
           data-repo-id="R_kgDOR1pQQw"

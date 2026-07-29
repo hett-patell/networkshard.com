@@ -2,7 +2,7 @@
 title: "I Mass-Accepted SSH Logins for 48 Hours and Catalogued Everything That Walked In"
 description: "38,208 events. 374 unique IPs. 12 malware samples. A self-propagating Chinese worm. A multi-architecture cryptominer. Two competing SSH backdoor campaigns. One very convincing fake server."
 date: 2026-04-29
-category: "operations"
+category: "threat-intel"
 tags: ["ssh", "honeypot", "cowrie", "malware", "botnet", "oracle-cloud", "telemetry"]
 readTime: "18 min read"
 ---

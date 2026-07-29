@@ -1,13 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
-import { getCollection } from 'astro:content';
 import { personSchema } from '../lib/jsonld';
+import { getPublishedPosts } from '../lib/posts';
 
 const ogImage = `${Astro.site}og/about.png`;
 
-const posts = await getCollection('blog');
-const postCount = posts.filter(p => !p.data.draft).length;
+const posts = await getPublishedPosts();
+const postCount = posts.length;
 
 let totalViews: string | null = null;
 try {
@@ -28,6 +28,42 @@ const skills = [
   'Security Research', 'Ethical Hacking', 'Burp Suite', 'Nmap', 'Metasploit',
   'Kali Linux', 'Wireshark', 'Python', 'Docker', 'Bash', 'Linux'
 ];
+
+type ResearchAdvisory = {
+  id: `CVE-${number}-${number}`;
+  score: `${number}/10`;
+  title: string;
+  vendor: string;
+  impact: string;
+  href: `https://${string}`;
+};
+
+const researchAdvisories: ResearchAdvisory[] = [
+  {
+    id: 'CVE-2026-35478',
+    score: '8.3/10',
+    title: 'Arbitrary API Token Creation',
+    vendor: 'InvenTree Security Advisory',
+    impact: 'Any authenticated InvenTree user can create a valid API token attributed to any other user in the system — including administrators and superusers — by supplying the target\'s user ID in the user field of a POST /api/user/tokens/ request. The returned token is immediately usable for full API authentication as the target user, from any network location, with no further interaction required.',
+    href: 'https://github.com/inventree/InvenTree/security/advisories/GHSA-qh5j-c28q-c4rg',
+  },
+  {
+    id: 'CVE-2026-41234',
+    score: '7.6/10',
+    title: 'BIND Zone File Injection via TXT Record',
+    vendor: 'Froxlor Security Advisory',
+    impact: 'The DomainZones.add API endpoint fails to sanitize newline characters in TXT record content, so an authenticated customer with DNS editing enabled can break out of the record line in generated BIND zone files. This allows injecting arbitrary BIND directives and DNS records — including $INCLUDE to read world-readable files, spoofed A/MX/CNAME records for subdomain takeover or email interception, and malformed content that takes the zone offline.',
+    href: 'https://github.com/froxlor/froxlor/security/advisories/GHSA-37m5-m4q3-fc6x',
+  },
+  {
+    id: 'CVE-2026-52793',
+    score: '8.1/10',
+    title: 'API Authentication Bypasses 2FA',
+    vendor: 'Froxlor Security Advisory',
+    impact: 'Froxlor\'s API authentication (FroxlorRPC::validateAuth) does not enforce Two-Factor Authentication. When a user enables 2FA, the web UI correctly requires a TOTP code — but the API accepts requests authenticated with only an API key and secret, issuing no TOTP challenge. An attacker who obtains a leaked API key+secret for a 2FA-protected account has full access to all API operations without providing a second factor.',
+    href: 'https://github.com/froxlor/froxlor/security/advisories/GHSA-f9rx-7wf7-jr36',
+  },
+];
 ---
 
 <BaseLayout
@@ -36,8 +72,8 @@ const skills = [
   image={ogImage}
   jsonLd={personSchema()}
 >
-  <section class="pb-8 md:pb-12 space-y-6">
-    <div class="bento-card about-profile-card">
+  <section class="border-b border-border pb-8 md:pb-10">
+    <div>
       <div class="flex flex-col gap-5">
         <div class="flex items-start gap-4">
           <img
@@ -45,7 +81,7 @@ const skills = [
             alt="Het Patel — Cybersecurity Engineer"
             width="765"
             height="1024"
-            class="w-20 h-20 md:w-28 md:h-28 rounded-xl object-cover object-[center_30%] shrink-0 ring-1 ring-border/50"
+            class="h-28 w-24 shrink-0 rounded-xl border border-border object-cover object-[center_30%] grayscale transition-[filter,border-color,box-shadow] duration-300 ease-out hover:border-primary/60 hover:grayscale-0 hover:shadow-sm md:h-40 md:w-32"
             loading="eager"
             decoding="async"
           />
@@ -59,42 +95,47 @@ const skills = [
 
         <div class="space-y-4">
           <p class="text-base text-muted-foreground leading-relaxed">
-            I'm a Junior Cybersecurity Engineer focused on building defensive systems that are practical, scalable, and testable. I work across penetration testing, vulnerability validation, and secure engineering practices.
+            I'm a Junior Cybersecurity Engineer working across penetration testing, vulnerability validation, security research, and defensive engineering. I care about findings that can be reproduced, systems that can be inspected, and remediation that holds up in practice.
           </p>
           <p class="text-base text-muted-foreground leading-relaxed">
-            I specialize in Linux-first security workflows, web and infrastructure testing, and research-driven remediation while learning through hands-on delivery in real-world environments. My approach is simple: verify everything, automate what repeats, and keep systems understandable.
+            My work is Linux-first and hands-on: I test web applications and infrastructure, review evidence closely, and turn repeated security workflows into understandable tools.
           </p>
         </div>
 
-        <div>
-          <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground mb-3">Skills & Tools</p>
-          <div class="skills-strip">
-            <div class="skills-track">
-              {skills.concat(skills).map(skill => (
-                <span class="inline-flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-md border border-border/60 bg-muted/70 text-muted-foreground">
-                  <svg class="size-3.5 text-primary/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-                  <span>{skill}</span>
-                </span>
-              ))}
-            </div>
-          </div>
+        <div class="border-y border-border py-4">
+          <p class="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Skills & Tools</p>
+          <p class="text-xs leading-6 text-muted-foreground">{skills.join(' · ')}</p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
-          <a href="https://github.com/hett-patell" target="_blank" rel="noopener" class="btn-neo-primary">GitHub</a>
-          <a href="/Het Patel.pdf" download class="btn-neo-outline">
-            Download CV
-          </a>
+        <div class="flex flex-wrap items-center gap-6 text-sm">
+          <a href="https://github.com/hett-patell" target="_blank" rel="noopener noreferrer" class="font-semibold text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">GitHub ↗</a>
+          <a href="/Het Patel.pdf" download class="font-semibold text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">Download CV ↓</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- How I work -->
+  <section class="pb-8 md:pb-12">
+    <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">How I work</h2>
+    <div class="space-y-4 border-t border-border py-5 text-sm leading-relaxed text-muted-foreground">
+      <p>
+        I prefer to learn from observable behaviour: reproduce the issue, preserve the evidence, test the boundary conditions, and make the result useful to the people responsible for fixing it. When a workflow repeats, I look for a way to make it safer and easier to inspect.
+      </p>
+      <p>
+        That approach runs through my <a href="/projects" class="font-semibold text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">Shard projects</a>. In my writing, I also document the operational lessons behind the tools—including <a href="/blog/deploy-your-own-ssh-honeypot" class="font-semibold text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">deploying an SSH honeypot</a> and <a href="/blog/shardlure-the-dashboard-was-lying" class="font-semibold text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-primary">checking a dashboard against its underlying data</a>.
+      </p>
     </div>
   </section>
 
   <!-- Experience -->
   <section class="pb-8 md:pb-12">
     <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">Experience</h2>
-    <div class="grid grid-cols-1 gap-3">
-      <div class="bento-card">
+    <p class="mb-5 text-sm leading-relaxed text-muted-foreground">
+      In my professional work, I apply that same emphasis on verification, clear reporting, and practical remediation across production infrastructure and security assessments.
+    </p>
+    <div class="grid grid-cols-1">
+      <div class="border-t border-border py-5">
         <div class="flex flex-wrap items-start justify-between gap-2">
           <div class="min-w-0">
             <p class="text-base font-bold text-foreground">Inventyv Software Services Pvt. Ltd.</p>
@@ -113,7 +154,7 @@ const skills = [
         </ul>
       </div>
 
-      <div class="bento-card">
+      <div class="border-t border-border py-5">
         <div class="flex flex-wrap items-start justify-between gap-2">
           <div class="min-w-0">
             <p class="text-base font-bold text-foreground">Hacker4Help</p>
@@ -136,30 +177,30 @@ const skills = [
   <!-- Hall of Fame -->
   <section class="pb-8 md:pb-12">
     <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">Hall of Fame</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div class="bento-card">
+    <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-8">
+      <div class="border-t border-border py-5">
         <p class="text-lg font-bold text-foreground">NASA</p>
         <p class="text-sm text-muted-foreground mt-0.5">Vulnerability Disclosure Policy (VDP)</p>
         <p class="text-sm text-muted-foreground mt-1">Letter of Recognition — May 2026</p>
-        <a href="/NASA-LOR.pdf" target="_blank" rel="noopener"
+        <a href="/NASA-LOR.pdf" target="_blank" rel="noopener noreferrer"
           class="inline-block mt-2 text-xs font-mono text-primary-hover hover:text-primary transition-colors">
           View letter &rarr;
         </a>
       </div>
-      <div class="bento-card">
+      <div class="border-t border-border py-5">
         <p class="text-lg font-bold text-foreground">CERT-IN</p>
         <p class="text-sm text-muted-foreground mt-0.5">Indian Computer Emergency Response Team</p>
         <p class="text-sm text-muted-foreground mt-1">Hall of Fame — September & October 2025</p>
-        <a href="https://www.cert-in.org.in/Hallof_Fame_Oct25.jsp" target="_blank" rel="noopener"
+        <a href="https://www.cert-in.org.in/Hallof_Fame_Oct25.jsp" target="_blank" rel="noopener noreferrer"
           class="inline-block mt-2 text-xs font-mono text-primary-hover hover:text-primary transition-colors">
           View on CERT-IN &rarr;
         </a>
       </div>
-      <div class="bento-card">
+      <div class="border-t border-border py-5">
         <p class="text-lg font-bold text-foreground">Zyte</p>
         <p class="text-sm text-muted-foreground mt-0.5">Responsible Disclosure Program</p>
         <p class="text-sm text-muted-foreground mt-1">Security Researcher — Hall of Fame</p>
-        <a href="https://www.zyte.com/terms-policies/responsible-disclosure-policy/" target="_blank" rel="noopener"
+        <a href="https://www.zyte.com/terms-policies/responsible-disclosure-policy/" target="_blank" rel="noopener noreferrer"
           class="inline-block mt-2 text-xs font-mono text-primary-hover hover:text-primary transition-colors">
           View on Zyte &rarr;
         </a>
@@ -170,130 +211,44 @@ const skills = [
   <!-- CVEs -->
   <section class="pb-8 md:pb-12">
     <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">CVEs</h2>
-    <div class="grid grid-cols-1 gap-3">
-      <div class="bento-card">
-        <div class="flex items-start justify-between gap-4">
+    <p class="mb-5 text-sm leading-relaxed text-muted-foreground">
+      My security research includes work associated with the published advisories below. I present each issue in the scope documented by the vendor advisory, without implying that publication is a sole-discovery claim.
+    </p>
+    <div>
+      {researchAdvisories.map((advisory) => (
+        <article class="grid gap-4 border-t border-border py-5 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-6">
+          <dl class="grid grid-cols-2 gap-4 sm:block">
+            <div>
+              <dt class="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">CVE ID</dt>
+              <dd class="mt-1 text-xs font-mono text-foreground sm:text-sm">{advisory.id}</dd>
+            </div>
+            <div class="sm:mt-4">
+              <dt class="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">Score</dt>
+              <dd class="mt-1 text-xs font-mono text-foreground sm:text-sm">{advisory.score}</dd>
+            </div>
+          </dl>
           <div class="min-w-0">
-            <p class="text-lg font-bold text-foreground">Arbitrary API Token Creation</p>
-            <p class="text-sm text-muted-foreground mt-0.5">InvenTree Security Advisory</p>
+            <h3 class="text-base font-bold leading-snug text-foreground">{advisory.title}</h3>
+            <p class="mt-0.5 text-xs text-muted-foreground">{advisory.vendor}</p>
+            <p class="mt-3 text-sm leading-relaxed text-muted-foreground">{advisory.impact}</p>
+            <a
+              href={advisory.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-3 inline-block text-xs font-mono text-primary-hover transition-colors hover:text-primary"
+            >
+              View advisory on GitHub &rarr;
+            </a>
           </div>
-          <span class="shrink-0 inline-flex items-center rounded-md border border-border/60 bg-muted/60 px-2.5 py-1 text-xs font-mono font-semibold text-foreground">
-            8.3/10
-          </span>
-        </div>
-
-        <div class="mt-4 space-y-2">
-          <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Impact</p>
-          <p class="text-sm text-muted-foreground leading-relaxed">
-            Any authenticated InvenTree user can create a valid API token attributed to any other user in the system — including administrators and superusers — by supplying the target's user ID in the <span class="font-mono">user</span> field of a <span class="font-mono">POST /api/user/tokens/</span> request. The returned token is immediately usable for full API authentication as the target user, from any network location, with no further interaction required.
-          </p>
-        </div>
-
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
-            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">CVE ID</p>
-            <p class="mt-1 text-sm font-mono text-foreground">CVE-2026-35478</p>
-          </div>
-          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
-            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Score</p>
-            <p class="mt-1 text-sm font-mono text-foreground">8.3/10</p>
-          </div>
-        </div>
-
-        <a
-          href="https://github.com/inventree/InvenTree/security/advisories/GHSA-qh5j-c28q-c4rg"
-          target="_blank"
-          rel="noopener"
-          class="inline-block mt-4 text-xs font-mono text-primary-hover hover:text-primary transition-colors"
-        >
-          View advisory on GitHub &rarr;
-        </a>
-      </div>
-
-      <div class="bento-card">
-        <div class="flex items-start justify-between gap-4">
-          <div class="min-w-0">
-            <p class="text-lg font-bold text-foreground">BIND Zone File Injection via TXT Record</p>
-            <p class="text-sm text-muted-foreground mt-0.5">Froxlor Security Advisory</p>
-          </div>
-          <span class="shrink-0 inline-flex items-center rounded-md border border-border/60 bg-muted/60 px-2.5 py-1 text-xs font-mono font-semibold text-foreground">
-            7.6/10
-          </span>
-        </div>
-
-        <div class="mt-4 space-y-2">
-          <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Impact</p>
-          <p class="text-sm text-muted-foreground leading-relaxed">
-            The <span class="font-mono">DomainZones.add</span> API endpoint fails to sanitize newline characters in TXT record content, so an authenticated customer with DNS editing enabled can break out of the record line in generated BIND zone files. This allows injecting arbitrary BIND directives and DNS records — including <span class="font-mono">$INCLUDE</span> to read world-readable files, spoofed A/MX/CNAME records for subdomain takeover or email interception, and malformed content that takes the zone offline.
-          </p>
-        </div>
-
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
-            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">CVE ID</p>
-            <p class="mt-1 text-sm font-mono text-foreground">CVE-2026-41234</p>
-          </div>
-          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
-            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Score</p>
-            <p class="mt-1 text-sm font-mono text-foreground">7.6/10</p>
-          </div>
-        </div>
-
-        <a
-          href="https://github.com/froxlor/froxlor/security/advisories/GHSA-37m5-m4q3-fc6x"
-          target="_blank"
-          rel="noopener"
-          class="inline-block mt-4 text-xs font-mono text-primary-hover hover:text-primary transition-colors"
-        >
-          View advisory on GitHub &rarr;
-        </a>
-      </div>
-
-      <div class="bento-card">
-        <div class="flex items-start justify-between gap-4">
-          <div class="min-w-0">
-            <p class="text-lg font-bold text-foreground">API Authentication Bypasses 2FA</p>
-            <p class="text-sm text-muted-foreground mt-0.5">Froxlor Security Advisory</p>
-          </div>
-          <span class="shrink-0 inline-flex items-center rounded-md border border-border/60 bg-muted/60 px-2.5 py-1 text-xs font-mono font-semibold text-foreground">
-            8.1/10
-          </span>
-        </div>
-
-        <div class="mt-4 space-y-2">
-          <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Impact</p>
-          <p class="text-sm text-muted-foreground leading-relaxed">
-            Froxlor's API authentication (<span class="font-mono">FroxlorRPC::validateAuth</span>) does not enforce Two-Factor Authentication. When a user enables 2FA, the web UI correctly requires a TOTP code — but the API accepts requests authenticated with only an API key and secret, issuing no TOTP challenge. An attacker who obtains a leaked API key+secret for a 2FA-protected account has full access to all API operations without providing a second factor.
-          </p>
-        </div>
-
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
-            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">CVE ID</p>
-            <p class="mt-1 text-sm font-mono text-foreground">CVE-2026-52793</p>
-          </div>
-          <div class="rounded-lg border border-border/60 bg-muted/40 p-3">
-            <p class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Score</p>
-            <p class="mt-1 text-sm font-mono text-foreground">8.1/10</p>
-          </div>
-        </div>
-
-        <a
-          href="https://github.com/froxlor/froxlor/security/advisories/GHSA-f9rx-7wf7-jr36"
-          target="_blank"
-          rel="noopener"
-          class="inline-block mt-4 text-xs font-mono text-primary-hover hover:text-primary transition-colors"
-        >
-          View advisory on GitHub &rarr;
-        </a>
-      </div>
+        </article>
+      ))}
     </div>
   </section>
 
   <!-- Certifications -->
   <section class="pb-8 md:pb-12">
     <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">Certifications</h2>
-    <div class="bento-card">
+    <div class="border-t border-border py-5">
       <div class="flex justify-between items-center">
         <div>
           <p class="text-base font-bold text-foreground">CRTA</p>
@@ -304,19 +259,22 @@ const skills = [
     </div>
   </section>
 
-  <!-- Site Stats -->
+  <!-- Writing -->
   <section class="pb-8 md:pb-12">
-    <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">Site Stats</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      <div class="bento-card">
+    <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">Writing here</h2>
+    <p class="mb-5 text-sm leading-relaxed text-muted-foreground">
+      I use this site to write through security research, tooling, and lessons from running systems in the open. The archive is small by design and grows when I have evidence or a process worth sharing.
+    </p>
+    <div class="grid grid-cols-2 sm:grid-cols-3 sm:gap-x-8">
+      <div class="border-t border-border py-5">
         <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Total Views</span>
         <p class="mt-2 text-2xl font-bold text-foreground">{totalViews ?? '—'}</p>
       </div>
-      <div class="bento-card">
+      <div class="border-t border-border py-5">
         <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Blog Posts</span>
         <p class="mt-2 text-2xl font-bold text-foreground">{postCount}</p>
       </div>
-      <div class="bento-card col-span-2 sm:col-span-1">
+      <div class="border-t border-border py-5 col-span-2 sm:col-span-1">
         <span class="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">Since</span>
         <p class="mt-2 text-2xl font-bold text-foreground">2025</p>
       </div>
@@ -326,8 +284,11 @@ const skills = [
   <!-- Connect -->
   <section class="pb-8 md:pb-12">
     <h2 class="text-xs font-mono font-semibold text-muted-foreground uppercase tracking-wider mb-4">Connect</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-      <a href="https://github.com/hett-patell" target="_blank" rel="noopener" class="bento-card group block">
+    <p class="mb-5 text-sm leading-relaxed text-muted-foreground">
+      If you'd like to discuss security research, an assessment, or one of my projects, send me an email or reach out through any of the links below.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-x-8">
+      <a href="https://github.com/hett-patell" target="_blank" rel="noopener noreferrer" class="group block border-t border-border py-4">
         <div class="flex items-center gap-2 mb-1">
           <Icon name="github" class="size-4 text-muted-foreground" />
           <span class="text-sm font-semibold text-foreground">GitHub</span>
@@ -335,7 +296,7 @@ const skills = [
         <span class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">@networkshard</span>
       </a>
 
-      <a href="https://www.linkedin.com/in/hetpatel9/" target="_blank" rel="noopener" class="bento-card group block">
+      <a href="https://www.linkedin.com/in/hetpatel9/" target="_blank" rel="noopener noreferrer" class="group block border-t border-border py-4">
         <div class="flex items-center gap-2 mb-1">
           <Icon name="linkedin" class="size-4 text-muted-foreground" />
           <span class="text-sm font-semibold text-foreground">LinkedIn</span>
@@ -343,7 +304,7 @@ const skills = [
         <span class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">hetpatel9</span>
       </a>
 
-      <a href="https://tryhackme.com/p/hettt" target="_blank" rel="noopener" class="bento-card group block">
+      <a href="https://tryhackme.com/p/hettt" target="_blank" rel="noopener noreferrer" class="group block border-t border-border py-4">
         <div class="flex items-center gap-2 mb-1">
           <span class="text-xs font-bold font-mono text-muted-foreground">THM</span>
           <span class="text-sm font-semibold text-foreground">TryHackMe</span>
@@ -351,7 +312,7 @@ const skills = [
         <span class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">@hettt &middot; Top 8%</span>
       </a>
 
-      <a href="https://hettt.medium.com/" target="_blank" rel="noopener" class="bento-card group block">
+      <a href="https://hettt.medium.com/" target="_blank" rel="noopener noreferrer" class="group block border-t border-border py-4">
         <div class="flex items-center gap-2 mb-1">
           <Icon name="medium" class="size-4 text-muted-foreground" />
           <span class="text-sm font-semibold text-foreground">Medium</span>
@@ -359,7 +320,7 @@ const skills = [
         <span class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">@hettt</span>
       </a>
 
-      <a href="mailto:hello@networkshard.com" class="bento-card group block">
+      <a href="mailto:hello@networkshard.com" class="group block border-t border-border py-4">
         <div class="flex items-center gap-2 mb-1">
           <Icon name="mail" class="size-4 text-muted-foreground" />
           <span class="text-sm font-semibold text-foreground">Email</span>

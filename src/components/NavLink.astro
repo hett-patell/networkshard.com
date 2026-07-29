@@ -10,11 +10,11 @@ const currentPath = Astro.url.pathname;
 const active = href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 
 const base = mobile
-  ? 'px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200'
-  : 'px-3 py-2 rounded-full transition-all duration-200';
+  ? 'block border-b border-border px-1 py-3 text-xs uppercase tracking-[0.14em] transition-colors'
+  : 'block border-b border-border py-2.5 text-xs uppercase tracking-[0.14em] transition-colors';
 const state = active
-  ? 'text-foreground bg-foreground/5'
-  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5';
+  ? 'text-foreground font-semibold'
+  : 'text-muted-foreground hover:text-foreground';
 ---
 
 <a href={href} data-nav-link class:list={[base, state]} aria-current={active ? 'page' : undefined}>

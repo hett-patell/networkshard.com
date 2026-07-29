@@ -2,6 +2,7 @@
 title: "Deploy Your Own SSH Honeypot in 10 Minutes with ShardLure"
 description: "A step-by-step guide to standing up a Cowrie SSH honeypot with the ShardLure intel dashboard on a fresh VPS — from copying your SSH key to a spinning globe of attacker traffic. One command, no lockout stories."
 date: 2026-06-05
+category: "guides"
 tags: ["ssh", "honeypot", "cowrie", "shardlure", "self-hosting", "vps", "tutorial", "threat-intel", "tailscale"]
 readTime: "11 min read"
 ---

@@ -1,41 +1,28 @@
 ---
-// Scroll-driven reading-progress bar pinned to the top of the viewport.
-// Disabled entirely under prefers-reduced-motion.
+// Minimal scroll progress indicator; hidden when reduced motion is requested.
 ---
-
-<div
-  id="reading-progress"
-  class="fixed left-0 top-0 z-[70] h-0.5 w-0 bg-primary motion-reduce:hidden"
-  role="progressbar"
-  aria-label="Reading progress"
-  aria-hidden="true"
-></div>
-
+<div id="reading-progress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
 <script is:inline>
   (function () {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const bar = document.getElementById('reading-progress');
-    if (!bar) return;
+    const progress = document.getElementById('reading-progress');
+    const bar = progress && progress.firstElementChild;
+    if (!progress || !bar) return;
     let ticking = false;
-
     function update() {
-      const doc = document.documentElement;
-      const max = doc.scrollHeight - doc.clientHeight;
-      const pct = max > 0 ? Math.min(100, (doc.scrollTop / max) * 100) : 0;
-      bar.style.width = pct + '%';
+      const root = document.documentElement;
+      const max = root.scrollHeight - root.clientHeight;
+      const value = max > 0 ? Math.min(100, Math.max(0, root.scrollTop / max * 100)) : 0;
+      bar.style.transform = `scaleX(${value / 100})`;
+      progress.setAttribute('aria-valuenow', String(Math.round(value)));
       ticking = false;
     }
-
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(update);
-        }
-      },
-      { passive: true }
-    );
+    window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
     update();
   })();
 </script>
+<style>
+  #reading-progress { position: fixed; inset: 0 0 auto; z-index: 70; height: 2px; pointer-events: none; }
+  #reading-progress span { display: block; width: 100%; height: 100%; background: var(--primary); transform: scaleX(0); transform-origin: left; }
+  @media (prefers-reduced-motion: reduce) { #reading-progress { display: none; } }
+</style>
