@@ -11,10 +11,9 @@ interface Props {
   image?: string;
   ogType?: string;
   jsonLd?: JsonLd | JsonLd[];
-  analytics?: boolean;
 }
 
-const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research.", image, ogType = 'website', jsonLd, analytics = true } = Astro.props;
+const { title, description = "Het Patel — Cybersecurity Engineer specializing in penetration testing, VAPT, vulnerability assessment, and security research.", image, ogType = 'website', jsonLd } = Astro.props;
 const currentPath = Astro.url.pathname;
 const buildCommit =
   import.meta.env.PUBLIC_COMMIT_SHA?.slice(0, 7) ||
@@ -392,24 +391,6 @@ const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
       });
     });
   </script>
-
-  {analytics && (
-    <>
-      <!-- GoatCounter analytics (privacy-friendly, no cookies) -->
-      <script is:inline>
-        (function() {
-          var localHostnames = ['localhost', '127.0.0.1', '::1'];
-          if (localHostnames.includes(window.location.hostname) || window.location.protocol === 'file:') return;
-          var s = document.createElement('script');
-          s.async = true;
-          s.src = '//gc.zgo.at/count.js';
-          s.dataset.goatcounter = 'https://networkshard.goatcounter.com/count';
-          s.onerror = function() {};
-          document.head.appendChild(s);
-        })();
-      </script>
-    </>
-  )}
 
   {currentPath.startsWith('/blog/') && (
     <>
