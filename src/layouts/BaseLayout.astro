@@ -400,6 +400,22 @@ const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
     });
   </script>
 
+  <!-- GoatCounter hit recording (cookieless). The about page's view count is
+       read back through the Cloudflare Worker proxy; without this script no
+       visits are recorded and that total never moves. -->
+  <script is:inline>
+    (function () {
+      var localHostnames = ['localhost', '127.0.0.1', '::1'];
+      if (localHostnames.includes(window.location.hostname) || window.location.protocol === 'file:') return;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = '//gc.zgo.at/count.js';
+      s.dataset.goatcounter = 'https://networkshard.goatcounter.com/count';
+      s.onerror = function () {};
+      document.head.appendChild(s);
+    })();
+  </script>
+
   {currentPath.startsWith('/blog/') && (
     <>
       <!-- Copy button on code blocks (blog pages only) -->
