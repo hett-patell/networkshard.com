@@ -400,19 +400,26 @@ const jsonLdBlocks: JsonLd[] = [...providedLd, ...(crumbLd ? [crumbLd] : [])];
     });
   </script>
 
-  <!-- GoatCounter hit recording (cookieless). The about page's view count is
-       read back through the Cloudflare Worker proxy; without this script no
-       visits are recorded and that total never moves. -->
+  <!-- Pageview recording (cookieless). Hits go through the networkshard-views-proxy
+       Cloudflare Worker, which forwards them to GoatCounter's API, instead of
+       GoatCounter's count.js, which ad/tracker blockers refuse to load. The
+       about page's view count reads the total back from the same worker. -->
   <script is:inline>
     (function () {
       var localHostnames = ['localhost', '127.0.0.1', '::1'];
-      if (localHostnames.includes(window.location.hostname) || window.location.protocol === 'file:') return;
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = '//gc.zgo.at/count.js';
-      s.dataset.goatcounter = 'https://networkshard.goatcounter.com/count';
-      s.onerror = function () {};
-      document.head.appendChild(s);
+      if (localHostnames.includes(location.hostname) || location.protocol === 'file:') return;
+      if (navigator.webdriver) return;
+      var body = JSON.stringify({
+        p: location.pathname,
+        t: document.title,
+        r: document.referrer,
+      });
+      var url = 'https://networkshard-views-proxy.awesomehet1.workers.dev/hit';
+      // text/plain keeps this a simple request: no CORS preflight.
+      try {
+        if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: 'text/plain' }))) return;
+      } catch (e) {}
+      fetch(url, { method: 'POST', body: body, headers: { 'Content-Type': 'text/plain' }, keepalive: true, mode: 'no-cors' }).catch(function () {});
     })();
   </script>
 
